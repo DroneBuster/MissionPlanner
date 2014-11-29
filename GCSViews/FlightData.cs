@@ -3220,5 +3220,123 @@ namespace MissionPlanner.GCSViews
             //thisthread.Join();
         }
 
+        private void fs_on_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ((Button)sender).Enabled = false;
+                if (MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_GRIPPER, 1, 0, 0, 0, 0, 0, 0))
+                    fs_state.BackColor = Color.Green;
+            }
+            catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
+            ((Button)sender).Enabled = true;
+
+        }
+
+        private void fs_off_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ((Button)sender).Enabled = false;
+                if (MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_GRIPPER, 2, 0, 0, 0, 0, 0, 0))
+                    fs_state.BackColor = Color.Red;
+            }
+            catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
+            ((Button)sender).Enabled = true;
+        }
+
+        private void land_now_Click(object sender, EventArgs e)
+        {
+            DialogResult open_para = DialogResult.Cancel;
+
+            open_para = CustomMessageBox.Show("Land Now?", "Parachute", MessageBoxButtons.YesNo);
+            if (open_para == DialogResult.Yes)
+            {
+                try
+                {
+                    ((Button)sender).Enabled = false;
+                    if (!MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_GRIPPER, 0, 1, 0, 0, 0, 0, 0))
+                        CustomMessageBox.Show("Error sending land command", "Error");
+                }
+                catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
+                ((Button)sender).Enabled = true;
+            }
+        }
+
+        private void para_open_Click(object sender, EventArgs e)
+        {
+            if (MainV2.comPort.BaseStream.IsOpen && MainV2.comPort.MAV.cs.groundspeed > 4)
+                if (DialogResult.No == CustomMessageBox.Show("Your model is still moving are you sure you want to open parachute (only servo)?", "Parachute Servo", MessageBoxButtons.YesNo))
+                    return;
+            try
+            {
+                ((Button)sender).Enabled = false;
+                if (!MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_GRIPPER, 0, 0, 0, 2, 0, 0, 0))
+                    CustomMessageBox.Show("The Command failed to execute", "Error");
+            }
+            catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
+            ((Button)sender).Enabled = true;    
+        }
+
+        private void para_close_Click(object sender, EventArgs e)
+        {
+            if (MainV2.comPort.BaseStream.IsOpen && MainV2.comPort.MAV.cs.groundspeed > 4)
+                if (DialogResult.No == CustomMessageBox.Show("Your model is still moving are you sure you want to close parachute (only servo)?", "Parachute Servo", MessageBoxButtons.YesNo))
+                    return;
+            try
+            {
+                ((Button)sender).Enabled = false;
+                if (!MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_GRIPPER, 0, 0, 0, 1, 0, 0, 0))
+                    CustomMessageBox.Show("The Command failed to execute", "Error");
+            }
+            catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
+            ((Button)sender).Enabled = true;
+        }
+
+        private void ign_on_Click(object sender, EventArgs e)
+        {
+            if (MainV2.comPort.BaseStream.IsOpen && MainV2.comPort.MAV.cs.groundspeed > 4)
+                if (DialogResult.Yes == CustomMessageBox.Show("Your model is still moving are you sure you want to turn on ignition (only ignition)?", "Ignition", MessageBoxButtons.YesNo))
+                    return;
+            try
+            {
+                ((Button)sender).Enabled = false;
+                if (!MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_GRIPPER, 0, 0, 1, 0, 0, 0, 0))
+                    CustomMessageBox.Show("The Command failed to execute", "Error");
+            }
+            catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
+            ((Button)sender).Enabled = true;
+        }
+
+        private void ign_off_Click(object sender, EventArgs e)
+        {
+            if (MainV2.comPort.BaseStream.IsOpen && MainV2.comPort.MAV.cs.groundspeed > 4)
+                if (DialogResult.Yes == CustomMessageBox.Show("Your model is still moving are you sure you want to turn off ignition (only ignition)?", "Ignition", MessageBoxButtons.YesNo))
+                    return;
+            try
+            {
+                ((Button)sender).Enabled = false;
+                if (!MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_GRIPPER, 0, 0, 2, 0, 0, 0, 0))
+                    CustomMessageBox.Show("The Command failed to execute", "Error");
+            }
+            catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
+            ((Button)sender).Enabled = true;
+        }
+
+        private void para_reset_Click(object sender, EventArgs e)
+        {
+            if (MainV2.comPort.BaseStream.IsOpen && MainV2.comPort.MAV.cs.groundspeed > 4)
+                if (DialogResult.Yes == CustomMessageBox.Show("Your model is still moving are you sure you want to reset parachute system?", "System Reset", MessageBoxButtons.YesNo))
+                    return;
+            try
+            {
+                ((Button)sender).Enabled = false;
+                if (!MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_GRIPPER, 42, 0, 0, 0, 0, 0, 0))
+                    CustomMessageBox.Show("The Command failed to execute", "Error");
+            }
+            catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
+            ((Button)sender).Enabled = true;
+
+        }
     }
 }

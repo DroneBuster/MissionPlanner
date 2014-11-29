@@ -44,6 +44,10 @@
             this.quickView2 = new MissionPlanner.Controls.QuickView();
             this.quickView1 = new MissionPlanner.Controls.QuickView();
             this.tabActions = new System.Windows.Forms.TabPage();
+            this.fs_state = new System.Windows.Forms.Label();
+            this.land_now = new MissionPlanner.Controls.MyButton();
+            this.fs_off = new MissionPlanner.Controls.MyButton();
+            this.fs_on = new MissionPlanner.Controls.MyButton();
             this.CMB_mountmode = new System.Windows.Forms.ComboBox();
             this.BUT_mountmode = new MissionPlanner.Controls.MyButton();
             this.modifyandSetSpeed = new MissionPlanner.Controls.ModifyandSet();
@@ -83,6 +87,12 @@
             this.servoOptions5 = new MissionPlanner.Controls.ServoOptions();
             this.servoOptions6 = new MissionPlanner.Controls.ServoOptions();
             this.servoOptions7 = new MissionPlanner.Controls.ServoOptions();
+            this.tabGround = new System.Windows.Forms.TabPage();
+            this.para_reset = new MissionPlanner.Controls.MyButton();
+            this.ign_off = new MissionPlanner.Controls.MyButton();
+            this.ign_on = new MissionPlanner.Controls.MyButton();
+            this.para_close = new MissionPlanner.Controls.MyButton();
+            this.para_open = new MissionPlanner.Controls.MyButton();
             this.tabTLogs = new System.Windows.Forms.TabPage();
             this.tableLayoutPaneltlogs = new System.Windows.Forms.TableLayoutPanel();
             this.BUT_loadtelem = new MissionPlanner.Controls.MyButton();
@@ -167,6 +177,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceGaugesTab)).BeginInit();
             this.tabServo.SuspendLayout();
             this.flowLayoutPanelServos.SuspendLayout();
+            this.tabGround.SuspendLayout();
             this.tabTLogs.SuspendLayout();
             this.tableLayoutPaneltlogs.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tracklog)).BeginInit();
@@ -426,6 +437,7 @@
             this.tabControlactions.Controls.Add(this.tabGauges);
             this.tabControlactions.Controls.Add(this.tabStatus);
             this.tabControlactions.Controls.Add(this.tabServo);
+            this.tabControlactions.Controls.Add(this.tabGround);
             this.tabControlactions.Controls.Add(this.tabTLogs);
             this.tabControlactions.Controls.Add(this.tablogbrowse);
             this.tabControlactions.Controls.Add(this.tabScripts);
@@ -541,6 +553,11 @@
             // 
             // tabActions
             // 
+            resources.ApplyResources(this.tabActions, "tabActions");
+            this.tabActions.Controls.Add(this.fs_state);
+            this.tabActions.Controls.Add(this.land_now);
+            this.tabActions.Controls.Add(this.fs_off);
+            this.tabActions.Controls.Add(this.fs_on);
             this.tabActions.Controls.Add(this.CMB_mountmode);
             this.tabActions.Controls.Add(this.BUT_mountmode);
             this.tabActions.Controls.Add(this.modifyandSetSpeed);
@@ -560,9 +577,38 @@
             this.tabActions.Controls.Add(this.BUT_RAWSensor);
             this.tabActions.Controls.Add(this.BUTrestartmission);
             this.tabActions.Controls.Add(this.BUTactiondo);
-            resources.ApplyResources(this.tabActions, "tabActions");
             this.tabActions.Name = "tabActions";
             this.tabActions.UseVisualStyleBackColor = true;
+            // 
+            // fs_state
+            // 
+            this.fs_state.BackColor = System.Drawing.Color.Gray;
+            resources.ApplyResources(this.fs_state, "fs_state");
+            this.fs_state.Name = "fs_state";
+            // 
+            // land_now
+            // 
+            resources.ApplyResources(this.land_now, "land_now");
+            this.land_now.Name = "land_now";
+            this.toolTip1.SetToolTip(this.land_now, resources.GetString("land_now.ToolTip"));
+            this.land_now.UseVisualStyleBackColor = true;
+            this.land_now.Click += new System.EventHandler(this.land_now_Click);
+            // 
+            // fs_off
+            // 
+            resources.ApplyResources(this.fs_off, "fs_off");
+            this.fs_off.Name = "fs_off";
+            this.toolTip1.SetToolTip(this.fs_off, resources.GetString("fs_off.ToolTip"));
+            this.fs_off.UseVisualStyleBackColor = true;
+            this.fs_off.Click += new System.EventHandler(this.fs_off_Click);
+            // 
+            // fs_on
+            // 
+            resources.ApplyResources(this.fs_on, "fs_on");
+            this.fs_on.Name = "fs_on";
+            this.toolTip1.SetToolTip(this.fs_on, resources.GetString("fs_on.ToolTip"));
+            this.fs_on.UseVisualStyleBackColor = true;
+            this.fs_on.Click += new System.EventHandler(this.fs_on_Click);
             // 
             // CMB_mountmode
             // 
@@ -1285,6 +1331,55 @@
             this.servoOptions7.Name = "servoOptions7";
             this.servoOptions7.thisservo = 11;
             // 
+            // tabGround
+            // 
+            this.tabGround.Controls.Add(this.para_reset);
+            this.tabGround.Controls.Add(this.ign_off);
+            this.tabGround.Controls.Add(this.ign_on);
+            this.tabGround.Controls.Add(this.para_close);
+            this.tabGround.Controls.Add(this.para_open);
+            resources.ApplyResources(this.tabGround, "tabGround");
+            this.tabGround.Name = "tabGround";
+            this.tabGround.UseVisualStyleBackColor = true;
+            // 
+            // para_reset
+            // 
+            resources.ApplyResources(this.para_reset, "para_reset");
+            this.para_reset.Name = "para_reset";
+            this.toolTip1.SetToolTip(this.para_reset, resources.GetString("para_reset.ToolTip"));
+            this.para_reset.UseVisualStyleBackColor = true;
+            this.para_reset.Click += new System.EventHandler(this.para_reset_Click);
+            // 
+            // ign_off
+            // 
+            resources.ApplyResources(this.ign_off, "ign_off");
+            this.ign_off.Name = "ign_off";
+            this.ign_off.Click += new System.EventHandler(this.ign_off_Click);
+            // 
+            // ign_on
+            // 
+            resources.ApplyResources(this.ign_on, "ign_on");
+            this.ign_on.Name = "ign_on";
+            this.toolTip1.SetToolTip(this.ign_on, resources.GetString("ign_on.ToolTip"));
+            this.ign_on.UseVisualStyleBackColor = true;
+            this.ign_on.Click += new System.EventHandler(this.ign_on_Click);
+            // 
+            // para_close
+            // 
+            resources.ApplyResources(this.para_close, "para_close");
+            this.para_close.Name = "para_close";
+            this.toolTip1.SetToolTip(this.para_close, resources.GetString("para_close.ToolTip"));
+            this.para_close.UseVisualStyleBackColor = true;
+            this.para_close.Click += new System.EventHandler(this.para_close_Click);
+            // 
+            // para_open
+            // 
+            resources.ApplyResources(this.para_open, "para_open");
+            this.para_open.Name = "para_open";
+            this.toolTip1.SetToolTip(this.para_open, resources.GetString("para_open.ToolTip"));
+            this.para_open.UseVisualStyleBackColor = true;
+            this.para_open.Click += new System.EventHandler(this.para_open_Click);
+            // 
             // tabTLogs
             // 
             this.tabTLogs.Controls.Add(this.tableLayoutPaneltlogs);
@@ -1600,7 +1695,7 @@
             this.windDir1.BackColor = System.Drawing.Color.Transparent;
             this.windDir1.DataBindings.Add(new System.Windows.Forms.Binding("Direction", this.bindingSource1, "wind_dir", true, System.Windows.Forms.DataSourceUpdateMode.Never));
             this.windDir1.DataBindings.Add(new System.Windows.Forms.Binding("Speed", this.bindingSource1, "wind_vel", true, System.Windows.Forms.DataSourceUpdateMode.Never));
-            this.windDir1.Direction = 360D;
+            this.windDir1.Direction = 180D;
             resources.ApplyResources(this.windDir1, "windDir1");
             this.windDir1.Name = "windDir1";
             this.windDir1.Speed = 0D;
@@ -1841,6 +1936,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceGaugesTab)).EndInit();
             this.tabServo.ResumeLayout(false);
             this.flowLayoutPanelServos.ResumeLayout(false);
+            this.tabGround.ResumeLayout(false);
             this.tabTLogs.ResumeLayout(false);
             this.tableLayoutPaneltlogs.ResumeLayout(false);
             this.tableLayoutPaneltlogs.PerformLayout();
@@ -2006,6 +2102,16 @@
         private System.Windows.Forms.ToolStripMenuItem addPoiToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveFileToolStripMenuItem;
+        private Controls.MyButton fs_on;
+        private Controls.MyButton fs_off;
+        private Controls.MyButton land_now;
+        private System.Windows.Forms.Label fs_state;
+        private System.Windows.Forms.TabPage tabGround;
+        private Controls.MyButton ign_off;
+        private Controls.MyButton ign_on;
+        private Controls.MyButton para_close;
+        private Controls.MyButton para_open;
+        private Controls.MyButton para_reset;
 
     }
 }
