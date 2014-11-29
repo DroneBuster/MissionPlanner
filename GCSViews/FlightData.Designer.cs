@@ -155,6 +155,8 @@
             this.dataGridViewImageColumn2 = new System.Windows.Forms.DataGridViewImageColumn();
             this.Messagetabtimer = new System.Windows.Forms.Timer(this.components);
             this.bindingSourceStatusTab = new System.Windows.Forms.BindingSource(this.components);
+            this.gimb_up = new MissionPlanner.Controls.MyButton();
+            this.gimb_down = new MissionPlanner.Controls.MyButton();
             this.contextMenuStripMap.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainH)).BeginInit();
             this.MainH.Panel1.SuspendLayout();
@@ -554,6 +556,8 @@
             // tabActions
             // 
             resources.ApplyResources(this.tabActions, "tabActions");
+            this.tabActions.Controls.Add(this.gimb_down);
+            this.tabActions.Controls.Add(this.gimb_up);
             this.tabActions.Controls.Add(this.fs_state);
             this.tabActions.Controls.Add(this.land_now);
             this.tabActions.Controls.Add(this.fs_off);
@@ -1695,7 +1699,7 @@
             this.windDir1.BackColor = System.Drawing.Color.Transparent;
             this.windDir1.DataBindings.Add(new System.Windows.Forms.Binding("Direction", this.bindingSource1, "wind_dir", true, System.Windows.Forms.DataSourceUpdateMode.Never));
             this.windDir1.DataBindings.Add(new System.Windows.Forms.Binding("Speed", this.bindingSource1, "wind_vel", true, System.Windows.Forms.DataSourceUpdateMode.Never));
-            this.windDir1.Direction = 180D;
+            this.windDir1.Direction = 360D;
             resources.ApplyResources(this.windDir1, "windDir1");
             this.windDir1.Name = "windDir1";
             this.windDir1.Speed = 0D;
@@ -1902,6 +1906,22 @@
             // bindingSourceStatusTab
             // 
             this.bindingSourceStatusTab.DataSource = typeof(MissionPlanner.CurrentState);
+            // 
+            // gimb_up
+            // 
+            resources.ApplyResources(this.gimb_up, "gimb_up");
+            this.gimb_up.Name = "gimb_up";
+            this.toolTip1.SetToolTip(this.gimb_up, resources.GetString("gimb_up.ToolTip"));
+            this.gimb_up.UseVisualStyleBackColor = true;
+            this.gimb_up.Click += new System.EventHandler(this.gimb_up_Click);
+            // 
+            // gimb_down
+            // 
+            resources.ApplyResources(this.gimb_down, "gimb_down");
+            this.gimb_down.Name = "gimb_down";
+            this.toolTip1.SetToolTip(this.gimb_down, resources.GetString("gimb_down.ToolTip"));
+            this.gimb_down.UseVisualStyleBackColor = true;
+            this.gimb_down.Click += new System.EventHandler(this.gimb_down_Click);
             // 
             // FlightData
             // 
@@ -2112,6 +2132,8 @@
         private Controls.MyButton para_close;
         private Controls.MyButton para_open;
         private Controls.MyButton para_reset;
+        private Controls.MyButton gimb_up;
+        private Controls.MyButton gimb_down;
 
     }
 }

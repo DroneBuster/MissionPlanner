@@ -3338,5 +3338,30 @@ namespace MissionPlanner.GCSViews
             ((Button)sender).Enabled = true;
 
         }
+
+        private void gimb_up_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ((Button)sender).Enabled = false;
+                if (!MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_GRIPPER, 0, 0, 0, 0, 2, 0, 0))
+                    CustomMessageBox.Show("The Command failed to execute", "Error");
+
+            }
+            catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
+            ((Button)sender).Enabled = true;
+        }
+
+        private void gimb_down_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ((Button)sender).Enabled = false;
+                if (!MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_GRIPPER, 0, 0, 0, 0, 1, 0, 0))
+                    CustomMessageBox.Show("The Command failed to execute", "Error");
+            }
+            catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
+            ((Button)sender).Enabled = true;
+        }
     }
 }
