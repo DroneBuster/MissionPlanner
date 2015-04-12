@@ -838,6 +838,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Joystick\JoystickSetup.zh-Hant.resx">
       <DependentUpon>JoystickSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Joystick\Joy_ChangeMode.resx">
       <DependentUpon>Joy_ChangeMode.cs</DependentUpon>
@@ -2401,6 +2402,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Joystick\JoystickSetup.zh-TW.resx">
       <DependentUpon>JoystickSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Log\LogDownload.fr.resx">
       <DependentUpon>LogDownload.cs</DependentUpon>

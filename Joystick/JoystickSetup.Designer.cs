@@ -90,6 +90,30 @@ namespace MissionPlanner.Joystick
             this.BUT_detch7 = new MissionPlanner.Controls.MyButton();
             this.ProgressBarCH7 = new MissionPlanner.Controls.HorizontalProgressBar();
             this.label14 = new System.Windows.Forms.Label();
+            this.BUT_detch9 = new MissionPlanner.Controls.MyButton();
+            this.revCH9 = new System.Windows.Forms.CheckBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.expo_ch9 = new System.Windows.Forms.TextBox();
+            this.ProgressBarCH9 = new MissionPlanner.Controls.HorizontalProgressBar();
+            this.CMB_CH9 = new System.Windows.Forms.ComboBox();
+            this.BUT_detch10 = new MissionPlanner.Controls.MyButton();
+            this.revCH10 = new System.Windows.Forms.CheckBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.expo_ch10 = new System.Windows.Forms.TextBox();
+            this.ProgressBarCH10 = new MissionPlanner.Controls.HorizontalProgressBar();
+            this.CMB_CH10 = new System.Windows.Forms.ComboBox();
+            this.BUT_detch11 = new MissionPlanner.Controls.MyButton();
+            this.revCH11 = new System.Windows.Forms.CheckBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.expo_ch11 = new System.Windows.Forms.TextBox();
+            this.ProgressBarCH11 = new MissionPlanner.Controls.HorizontalProgressBar();
+            this.CMB_CH11 = new System.Windows.Forms.ComboBox();
+            this.BUT_detch12 = new MissionPlanner.Controls.MyButton();
+            this.revCH12 = new System.Windows.Forms.CheckBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.expo_ch12 = new System.Windows.Forms.TextBox();
+            this.ProgressBarCH12 = new MissionPlanner.Controls.HorizontalProgressBar();
+            this.CMB_CH12 = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // CMB_joysticks
@@ -540,10 +564,226 @@ namespace MissionPlanner.Joystick
             resources.ApplyResources(this.label14, "label14");
             this.label14.Name = "label14";
             // 
+            // BUT_detch9
+            // 
+            resources.ApplyResources(this.BUT_detch9, "BUT_detch9");
+            this.BUT_detch9.Name = "BUT_detch9";
+            this.BUT_detch9.UseVisualStyleBackColor = true;
+            this.BUT_detch9.Click += new System.EventHandler(this.BUT_detch9_Click);
+            // 
+            // revCH9
+            // 
+            resources.ApplyResources(this.revCH9, "revCH9");
+            this.revCH9.Name = "revCH9";
+            this.revCH9.UseVisualStyleBackColor = true;
+            this.revCH9.CheckedChanged += new System.EventHandler(this.revCH9_CheckedChanged);
+            // 
+            // label15
+            // 
+            resources.ApplyResources(this.label15, "label15");
+            this.label15.Name = "label15";
+            // 
+            // expo_ch9
+            // 
+            this.expo_ch9.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            resources.ApplyResources(this.expo_ch9, "expo_ch9");
+            this.expo_ch9.Name = "expo_ch9";
+            // 
+            // ProgressBarCH9
+            // 
+            resources.ApplyResources(this.ProgressBarCH9, "ProgressBarCH9");
+            this.ProgressBarCH9.Label = null;
+            this.ProgressBarCH9.Maximum = 2200;
+            this.ProgressBarCH9.maxline = 0;
+            this.ProgressBarCH9.Minimum = 800;
+            this.ProgressBarCH9.minline = 0;
+            this.ProgressBarCH9.Name = "ProgressBarCH9";
+            this.ProgressBarCH9.Value = 800;
+            // 
+            // CMB_CH9
+            // 
+            this.CMB_CH9.FormattingEnabled = true;
+            this.CMB_CH9.Items.AddRange(new object[] {
+            resources.GetString("CMB_CH9.Items"),
+            resources.GetString("CMB_CH9.Items1"),
+            resources.GetString("CMB_CH9.Items2"),
+            resources.GetString("CMB_CH9.Items3")});
+            resources.ApplyResources(this.CMB_CH9, "CMB_CH9");
+            this.CMB_CH9.Name = "CMB_CH9";
+            this.CMB_CH9.SelectedIndexChanged += new System.EventHandler(this.CMB_CH9_SelectedIndexChanged);
+            // 
+            // BUT_detch10
+            // 
+            resources.ApplyResources(this.BUT_detch10, "BUT_detch10");
+            this.BUT_detch10.Name = "BUT_detch10";
+            this.BUT_detch10.UseVisualStyleBackColor = true;
+            this.BUT_detch10.Click += new System.EventHandler(this.BUT_detch10_Click);
+            // 
+            // revCH10
+            // 
+            resources.ApplyResources(this.revCH10, "revCH10");
+            this.revCH10.Name = "revCH10";
+            this.revCH10.UseVisualStyleBackColor = true;
+            this.revCH10.CheckedChanged += new System.EventHandler(this.revCH10_CheckedChanged);
+            // 
+            // label16
+            // 
+            resources.ApplyResources(this.label16, "label16");
+            this.label16.Name = "label16";
+            // 
+            // expo_ch10
+            // 
+            this.expo_ch10.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            resources.ApplyResources(this.expo_ch10, "expo_ch10");
+            this.expo_ch10.Name = "expo_ch10";
+            // 
+            // ProgressBarCH10
+            // 
+            resources.ApplyResources(this.ProgressBarCH10, "ProgressBarCH10");
+            this.ProgressBarCH10.Label = null;
+            this.ProgressBarCH10.Maximum = 2200;
+            this.ProgressBarCH10.maxline = 0;
+            this.ProgressBarCH10.Minimum = 800;
+            this.ProgressBarCH10.minline = 0;
+            this.ProgressBarCH10.Name = "ProgressBarCH10";
+            this.ProgressBarCH10.Value = 800;
+            // 
+            // CMB_CH10
+            // 
+            this.CMB_CH10.FormattingEnabled = true;
+            this.CMB_CH10.Items.AddRange(new object[] {
+            resources.GetString("CMB_CH10.Items"),
+            resources.GetString("CMB_CH10.Items1"),
+            resources.GetString("CMB_CH10.Items2"),
+            resources.GetString("CMB_CH10.Items3")});
+            resources.ApplyResources(this.CMB_CH10, "CMB_CH10");
+            this.CMB_CH10.Name = "CMB_CH10";
+            this.CMB_CH10.SelectedIndexChanged += new System.EventHandler(this.CMB_CH10_SelectedIndexChanged);
+            // 
+            // BUT_detch11
+            // 
+            resources.ApplyResources(this.BUT_detch11, "BUT_detch11");
+            this.BUT_detch11.Name = "BUT_detch11";
+            this.BUT_detch11.UseVisualStyleBackColor = true;
+            this.BUT_detch11.Click += new System.EventHandler(this.BUT_detch11_Click);
+            // 
+            // revCH11
+            // 
+            resources.ApplyResources(this.revCH11, "revCH11");
+            this.revCH11.Name = "revCH11";
+            this.revCH11.UseVisualStyleBackColor = true;
+            this.revCH11.CheckedChanged += new System.EventHandler(this.revCH11_CheckedChanged);
+            // 
+            // label17
+            // 
+            resources.ApplyResources(this.label17, "label17");
+            this.label17.Name = "label17";
+            // 
+            // expo_ch11
+            // 
+            this.expo_ch11.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            resources.ApplyResources(this.expo_ch11, "expo_ch11");
+            this.expo_ch11.Name = "expo_ch11";
+            // 
+            // ProgressBarCH11
+            // 
+            resources.ApplyResources(this.ProgressBarCH11, "ProgressBarCH11");
+            this.ProgressBarCH11.Label = null;
+            this.ProgressBarCH11.Maximum = 2200;
+            this.ProgressBarCH11.maxline = 0;
+            this.ProgressBarCH11.Minimum = 800;
+            this.ProgressBarCH11.minline = 0;
+            this.ProgressBarCH11.Name = "ProgressBarCH11";
+            this.ProgressBarCH11.Value = 800;
+            // 
+            // CMB_CH11
+            // 
+            this.CMB_CH11.FormattingEnabled = true;
+            this.CMB_CH11.Items.AddRange(new object[] {
+            resources.GetString("CMB_CH11.Items"),
+            resources.GetString("CMB_CH11.Items1"),
+            resources.GetString("CMB_CH11.Items2"),
+            resources.GetString("CMB_CH11.Items3")});
+            resources.ApplyResources(this.CMB_CH11, "CMB_CH11");
+            this.CMB_CH11.Name = "CMB_CH11";
+            this.CMB_CH11.SelectedIndexChanged += new System.EventHandler(this.CMB_CH11_SelectedIndexChanged);
+            // 
+            // BUT_detch12
+            // 
+            resources.ApplyResources(this.BUT_detch12, "BUT_detch12");
+            this.BUT_detch12.Name = "BUT_detch12";
+            this.BUT_detch12.UseVisualStyleBackColor = true;
+            this.BUT_detch12.Click += new System.EventHandler(this.BUT_detch12_Click);
+            // 
+            // revCH12
+            // 
+            resources.ApplyResources(this.revCH12, "revCH12");
+            this.revCH12.Name = "revCH12";
+            this.revCH12.UseVisualStyleBackColor = true;
+            this.revCH12.CheckedChanged += new System.EventHandler(this.revCH12_CheckedChanged);
+            // 
+            // label18
+            // 
+            resources.ApplyResources(this.label18, "label18");
+            this.label18.Name = "label18";
+            // 
+            // expo_ch12
+            // 
+            this.expo_ch12.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            resources.ApplyResources(this.expo_ch12, "expo_ch12");
+            this.expo_ch12.Name = "expo_ch12";
+            // 
+            // ProgressBarCH12
+            // 
+            resources.ApplyResources(this.ProgressBarCH12, "ProgressBarCH12");
+            this.ProgressBarCH12.Label = null;
+            this.ProgressBarCH12.Maximum = 2200;
+            this.ProgressBarCH12.maxline = 0;
+            this.ProgressBarCH12.Minimum = 800;
+            this.ProgressBarCH12.minline = 0;
+            this.ProgressBarCH12.Name = "ProgressBarCH12";
+            this.ProgressBarCH12.Value = 800;
+            // 
+            // CMB_CH12
+            // 
+            this.CMB_CH12.FormattingEnabled = true;
+            this.CMB_CH12.Items.AddRange(new object[] {
+            resources.GetString("CMB_CH12.Items"),
+            resources.GetString("CMB_CH12.Items1"),
+            resources.GetString("CMB_CH12.Items2"),
+            resources.GetString("CMB_CH12.Items3")});
+            resources.ApplyResources(this.CMB_CH12, "CMB_CH12");
+            this.CMB_CH12.Name = "CMB_CH12";
+            this.CMB_CH12.SelectedIndexChanged += new System.EventHandler(this.CMB_CH12_SelectedIndexChanged);
+            // 
             // JoystickSetup
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.BUT_detch12);
+            this.Controls.Add(this.revCH12);
+            this.Controls.Add(this.label18);
+            this.Controls.Add(this.expo_ch12);
+            this.Controls.Add(this.ProgressBarCH12);
+            this.Controls.Add(this.CMB_CH12);
+            this.Controls.Add(this.BUT_detch11);
+            this.Controls.Add(this.revCH11);
+            this.Controls.Add(this.label17);
+            this.Controls.Add(this.expo_ch11);
+            this.Controls.Add(this.ProgressBarCH11);
+            this.Controls.Add(this.CMB_CH11);
+            this.Controls.Add(this.BUT_detch10);
+            this.Controls.Add(this.revCH10);
+            this.Controls.Add(this.label16);
+            this.Controls.Add(this.expo_ch10);
+            this.Controls.Add(this.ProgressBarCH10);
+            this.Controls.Add(this.CMB_CH10);
+            this.Controls.Add(this.BUT_detch9);
+            this.Controls.Add(this.revCH9);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.expo_ch9);
+            this.Controls.Add(this.ProgressBarCH9);
+            this.Controls.Add(this.CMB_CH9);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.BUT_detch8);
             this.Controls.Add(this.revCH8);
@@ -671,5 +911,29 @@ namespace MissionPlanner.Joystick
         private HorizontalProgressBar ProgressBarCH8;
         private System.Windows.Forms.ComboBox CMB_CH8;
         private System.Windows.Forms.Label label14;
+        private MyButton BUT_detch9;
+        private System.Windows.Forms.CheckBox revCH9;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TextBox expo_ch9;
+        private HorizontalProgressBar ProgressBarCH9;
+        private System.Windows.Forms.ComboBox CMB_CH9;
+        private MyButton BUT_detch10;
+        private System.Windows.Forms.CheckBox revCH10;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox expo_ch10;
+        private HorizontalProgressBar ProgressBarCH10;
+        private System.Windows.Forms.ComboBox CMB_CH10;
+        private MyButton BUT_detch11;
+        private System.Windows.Forms.CheckBox revCH11;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox expo_ch11;
+        private HorizontalProgressBar ProgressBarCH11;
+        private System.Windows.Forms.ComboBox CMB_CH11;
+        private MyButton BUT_detch12;
+        private System.Windows.Forms.CheckBox revCH12;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.TextBox expo_ch12;
+        private HorizontalProgressBar ProgressBarCH12;
+        private System.Windows.Forms.ComboBox CMB_CH12;
     }
 }

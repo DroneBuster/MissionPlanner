@@ -210,7 +210,7 @@ namespace MissionPlanner.Joystick
             }
         }
 
-        JoyChannel[] JoyChannels = new JoyChannel[9]; // we are base 1
+        JoyChannel[] JoyChannels = new JoyChannel[13]; // we are base 1
         JoyButton[] JoyButtons = new JoyButton[128]; // base 0
 
         public static DeviceList getDevices()
@@ -573,6 +573,14 @@ namespace MissionPlanner.Joystick
                         MainV2.comPort.MAV.cs.rcoverridech7 = pickchannel(7, JoyChannels[7].axis, JoyChannels[7].reverse, JoyChannels[7].expo);
                     if (getJoystickAxis(8) != Joystick.joystickaxis.None)
                         MainV2.comPort.MAV.cs.rcoverridech8 = pickchannel(8, JoyChannels[8].axis, JoyChannels[8].reverse, JoyChannels[8].expo);
+                    if (getJoystickAxis(9) != Joystick.joystickaxis.None)
+                        MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_SET_SERVO, 9, pickchannel(9, JoyChannels[9].axis, JoyChannels[9].reverse, JoyChannels[9].expo), 0, 0, 0, 0, 0);
+                    if (getJoystickAxis(10) != Joystick.joystickaxis.None)
+                        MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_SET_SERVO, 10, pickchannel(10, JoyChannels[10].axis, JoyChannels[10].reverse, JoyChannels[10].expo), 0, 0, 0, 0, 0);
+                    if (getJoystickAxis(11) != Joystick.joystickaxis.None)
+                        MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_SET_SERVO, 11, pickchannel(11, JoyChannels[11].axis, JoyChannels[11].reverse, JoyChannels[11].expo), 0, 0, 0, 0, 0);
+                    if (getJoystickAxis(12) != Joystick.joystickaxis.None)
+                        MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_SET_SERVO, 12, pickchannel(12, JoyChannels[12].axis, JoyChannels[12].reverse, JoyChannels[12].expo), 0, 0, 0, 0, 0);
 
                     // disable button actions when not connected.
                     if (MainV2.comPort.BaseStream.IsOpen)
