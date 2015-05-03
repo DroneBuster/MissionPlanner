@@ -122,6 +122,7 @@
             this.triggerCameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.flightPlannerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setHomeHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.takeOffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.distanceBar1 = new MissionPlanner.Controls.DistanceBar();
             this.windDir1 = new MissionPlanner.Controls.WindDir();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
@@ -147,7 +148,18 @@
             this.dataGridViewImageColumn2 = new System.Windows.Forms.DataGridViewImageColumn();
             this.Messagetabtimer = new System.Windows.Forms.Timer(this.components);
             this.bindingSourceStatusTab = new System.Windows.Forms.BindingSource(this.components);
-            this.takeOffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gimb_down = new MissionPlanner.Controls.MyButton();
+            this.gimb_up = new MissionPlanner.Controls.MyButton();
+            this.fs_state = new System.Windows.Forms.Label();
+            this.land_now = new MissionPlanner.Controls.MyButton();
+            this.fs_off = new MissionPlanner.Controls.MyButton();
+            this.fs_on = new MissionPlanner.Controls.MyButton();
+            this.tabGround = new System.Windows.Forms.TabPage();
+            this.para_reset = new MissionPlanner.Controls.MyButton();
+            this.ign_off = new MissionPlanner.Controls.MyButton();
+            this.ign_on = new MissionPlanner.Controls.MyButton();
+            this.para_close = new MissionPlanner.Controls.MyButton();
+            this.para_open = new MissionPlanner.Controls.MyButton();
             ((System.ComponentModel.ISupportInitialize)(this.MainH)).BeginInit();
             this.MainH.Panel1.SuspendLayout();
             this.MainH.Panel2.SuspendLayout();
@@ -187,6 +199,7 @@
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Zoomlevel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceStatusTab)).BeginInit();
+            this.tabGround.SuspendLayout();
             this.SuspendLayout();
             // 
             // MainH
@@ -363,6 +376,7 @@
             this.tabControlactions.Controls.Add(this.tablogbrowse);
             this.tabControlactions.Controls.Add(this.tabScripts);
             this.tabControlactions.Controls.Add(this.tabPagemessages);
+            this.tabControlactions.Controls.Add(this.tabGround);
             resources.ApplyResources(this.tabControlactions, "tabControlactions");
             this.tabControlactions.Name = "tabControlactions";
             this.tabControlactions.SelectedIndex = 0;
@@ -474,6 +488,13 @@
             // 
             // tabActions
             // 
+            resources.ApplyResources(this.tabActions, "tabActions");
+            this.tabActions.Controls.Add(this.gimb_down);
+            this.tabActions.Controls.Add(this.gimb_up);
+            this.tabActions.Controls.Add(this.fs_state);
+            this.tabActions.Controls.Add(this.land_now);
+            this.tabActions.Controls.Add(this.fs_off);
+            this.tabActions.Controls.Add(this.fs_on);
             this.tabActions.Controls.Add(this.but_autotune);
             this.tabActions.Controls.Add(this.CMB_mountmode);
             this.tabActions.Controls.Add(this.BUT_mountmode);
@@ -494,7 +515,6 @@
             this.tabActions.Controls.Add(this.BUT_RAWSensor);
             this.tabActions.Controls.Add(this.BUTrestartmission);
             this.tabActions.Controls.Add(this.BUTactiondo);
-            resources.ApplyResources(this.tabActions, "tabActions");
             this.tabActions.Name = "tabActions";
             this.tabActions.UseVisualStyleBackColor = true;
             // 
@@ -1608,6 +1628,12 @@
             resources.ApplyResources(this.setHomeHereToolStripMenuItem, "setHomeHereToolStripMenuItem");
             this.setHomeHereToolStripMenuItem.Click += new System.EventHandler(this.setHomeHereToolStripMenuItem_Click);
             // 
+            // takeOffToolStripMenuItem
+            // 
+            this.takeOffToolStripMenuItem.Name = "takeOffToolStripMenuItem";
+            resources.ApplyResources(this.takeOffToolStripMenuItem, "takeOffToolStripMenuItem");
+            this.takeOffToolStripMenuItem.Click += new System.EventHandler(this.takeOffToolStripMenuItem_Click);
+            // 
             // distanceBar1
             // 
             resources.ApplyResources(this.distanceBar1, "distanceBar1");
@@ -1621,7 +1647,7 @@
             this.windDir1.BackColor = System.Drawing.Color.Transparent;
             this.windDir1.DataBindings.Add(new System.Windows.Forms.Binding("Direction", this.bindingSource1, "wind_dir", true, System.Windows.Forms.DataSourceUpdateMode.Never));
             this.windDir1.DataBindings.Add(new System.Windows.Forms.Binding("Speed", this.bindingSource1, "wind_vel", true, System.Windows.Forms.DataSourceUpdateMode.Never));
-            this.windDir1.Direction = 180D;
+            this.windDir1.Direction = 360D;
             resources.ApplyResources(this.windDir1, "windDir1");
             this.windDir1.Name = "windDir1";
             this.windDir1.Speed = 0D;
@@ -1830,11 +1856,100 @@
             // 
             this.bindingSourceStatusTab.DataSource = typeof(MissionPlanner.CurrentState);
             // 
-            // takeOffToolStripMenuItem
+            // gimb_down
             // 
-            this.takeOffToolStripMenuItem.Name = "takeOffToolStripMenuItem";
-            resources.ApplyResources(this.takeOffToolStripMenuItem, "takeOffToolStripMenuItem");
-            this.takeOffToolStripMenuItem.Click += new System.EventHandler(this.takeOffToolStripMenuItem_Click);
+            resources.ApplyResources(this.gimb_down, "gimb_down");
+            this.gimb_down.Name = "gimb_down";
+            this.toolTip1.SetToolTip(this.gimb_down, resources.GetString("gimb_down.ToolTip"));
+            this.gimb_down.UseVisualStyleBackColor = true;
+            this.gimb_down.Click += new System.EventHandler(this.gimb_down_Click);
+            // 
+            // gimb_up
+            // 
+            resources.ApplyResources(this.gimb_up, "gimb_up");
+            this.gimb_up.Name = "gimb_up";
+            this.toolTip1.SetToolTip(this.gimb_up, resources.GetString("gimb_up.ToolTip"));
+            this.gimb_up.UseVisualStyleBackColor = true;
+            this.gimb_up.Click += new System.EventHandler(this.gimb_up_Click);
+            // 
+            // fs_state
+            // 
+            this.fs_state.BackColor = System.Drawing.Color.Gray;
+            resources.ApplyResources(this.fs_state, "fs_state");
+            this.fs_state.Name = "fs_state";
+            // 
+            // land_now
+            // 
+            resources.ApplyResources(this.land_now, "land_now");
+            this.land_now.Name = "land_now";
+            this.toolTip1.SetToolTip(this.land_now, resources.GetString("land_now.ToolTip"));
+            this.land_now.UseVisualStyleBackColor = true;
+            this.land_now.Click += new System.EventHandler(this.land_now_Click);
+            // 
+            // fs_off
+            // 
+            resources.ApplyResources(this.fs_off, "fs_off");
+            this.fs_off.Name = "fs_off";
+            this.toolTip1.SetToolTip(this.fs_off, resources.GetString("fs_off.ToolTip"));
+            this.fs_off.UseVisualStyleBackColor = true;
+            this.fs_off.Click += new System.EventHandler(this.fs_off_Click);
+            // 
+            // fs_on
+            // 
+            resources.ApplyResources(this.fs_on, "fs_on");
+            this.fs_on.Name = "fs_on";
+            this.toolTip1.SetToolTip(this.fs_on, resources.GetString("fs_on.ToolTip"));
+            this.fs_on.UseVisualStyleBackColor = true;
+            this.fs_on.Click += new System.EventHandler(this.fs_on_Click);
+            // 
+            // tabGround
+            // 
+            this.tabGround.Controls.Add(this.para_reset);
+            this.tabGround.Controls.Add(this.ign_off);
+            this.tabGround.Controls.Add(this.ign_on);
+            this.tabGround.Controls.Add(this.para_close);
+            this.tabGround.Controls.Add(this.para_open);
+            resources.ApplyResources(this.tabGround, "tabGround");
+            this.tabGround.Name = "tabGround";
+            this.tabGround.UseVisualStyleBackColor = true;
+            // 
+            // para_reset
+            // 
+            resources.ApplyResources(this.para_reset, "para_reset");
+            this.para_reset.Name = "para_reset";
+            this.toolTip1.SetToolTip(this.para_reset, resources.GetString("para_reset.ToolTip"));
+            this.para_reset.UseVisualStyleBackColor = true;
+            this.para_reset.Click += new System.EventHandler(this.para_reset_Click);
+            // 
+            // ign_off
+            // 
+            resources.ApplyResources(this.ign_off, "ign_off");
+            this.ign_off.Name = "ign_off";
+            this.ign_off.Click += new System.EventHandler(this.ign_off_Click);
+            // 
+            // ign_on
+            // 
+            resources.ApplyResources(this.ign_on, "ign_on");
+            this.ign_on.Name = "ign_on";
+            this.toolTip1.SetToolTip(this.ign_on, resources.GetString("ign_on.ToolTip"));
+            this.ign_on.UseVisualStyleBackColor = true;
+            this.ign_on.Click += new System.EventHandler(this.ign_on_Click);
+            // 
+            // para_close
+            // 
+            resources.ApplyResources(this.para_close, "para_close");
+            this.para_close.Name = "para_close";
+            this.toolTip1.SetToolTip(this.para_close, resources.GetString("para_close.ToolTip"));
+            this.para_close.UseVisualStyleBackColor = true;
+            this.para_close.Click += new System.EventHandler(this.para_close_Click);
+            // 
+            // para_open
+            // 
+            resources.ApplyResources(this.para_open, "para_open");
+            this.para_open.Name = "para_open";
+            this.toolTip1.SetToolTip(this.para_open, resources.GetString("para_open.ToolTip"));
+            this.para_open.UseVisualStyleBackColor = true;
+            this.para_open.Click += new System.EventHandler(this.para_open_Click);
             // 
             // FlightData
             // 
@@ -1892,6 +2007,7 @@
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Zoomlevel)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceStatusTab)).EndInit();
+            this.tabGround.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -2037,6 +2153,18 @@
         private Controls.DistanceBar distanceBar1;
         private Controls.MyButton but_autotune;
         private System.Windows.Forms.ToolStripMenuItem takeOffToolStripMenuItem;
+        private Controls.MyButton gimb_down;
+        private Controls.MyButton gimb_up;
+        private System.Windows.Forms.Label fs_state;
+        private Controls.MyButton land_now;
+        private Controls.MyButton fs_off;
+        private Controls.MyButton fs_on;
+        private System.Windows.Forms.TabPage tabGround;
+        private Controls.MyButton para_reset;
+        private Controls.MyButton ign_off;
+        private Controls.MyButton ign_on;
+        private Controls.MyButton para_close;
+        private Controls.MyButton para_open;
 
     }
 }
