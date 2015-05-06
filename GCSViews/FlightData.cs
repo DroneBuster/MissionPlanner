@@ -1166,6 +1166,16 @@ namespace MissionPlanner.GCSViews
                             routes.Markers.Add(new GMarkerGoogle(currentloc, GMarkerGoogleType.blue_dot) { Position = MainV2.comPort.MAV.cs.MovingBase, ToolTipText = "Moving Base", ToolTipMode = MarkerTooltipMode.OnMouseOver });
                         }
 
+                        //TODO: improve para_land_loc calculation
+                        var para_land_loc = new PointLatLngAlt(MainV2.comPort.MAV.cs.lat, MainV2.comPort.MAV.cs.lng); //current plane location
+                        para_land_loc = para_land_loc.newpos(MainV2.comPort.MAV.cs.yaw, MainV2.comPort.MAV.cs.groundspeed * 2.0);
+                        double land_dist = MainV2.comPort.MAV.cs.wind_vel * (MainV2.comPort.MAV.cs.alt / 4.5);
+                        para_land_loc = para_land_loc.newpos(MainV2.comPort.MAV.cs.wind_dir - 180.0, land_dist);
+                        if (para_land_loc != PointLatLngAlt.Zero && CHK_landest.Checked)
+                        {
+                            routes.Markers.Add(new GMarkerGoogle(para_land_loc, GMarkerGoogleType.blue) { ToolTipText = "Estimated landing location", ToolTipMode = MarkerTooltipMode.OnMouseOver });
+                        }
+
                         // for testing
                         try
                         {
