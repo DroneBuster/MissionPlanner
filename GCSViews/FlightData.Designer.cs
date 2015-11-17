@@ -150,6 +150,8 @@
             this.dataGridViewImageColumn2 = new System.Windows.Forms.DataGridViewImageColumn();
             this.Messagetabtimer = new System.Windows.Forms.Timer(this.components);
             this.bindingSourceStatusTab = new System.Windows.Forms.BindingSource(this.components);
+            this.BUT_camoff = new MissionPlanner.Controls.MyButton();
+            this.BUT_camon = new MissionPlanner.Controls.MyButton();
             ((System.ComponentModel.ISupportInitialize)(this.MainH)).BeginInit();
             this.MainH.Panel1.SuspendLayout();
             this.MainH.Panel2.SuspendLayout();
@@ -313,6 +315,7 @@
             // 
             // contextMenuStripHud
             // 
+            this.contextMenuStripHud.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStripHud.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.recordHudToAVIToolStripMenuItem,
             this.stopRecordToolStripMenuItem,
@@ -385,6 +388,7 @@
             // 
             // contextMenuStripactionstab
             // 
+            this.contextMenuStripactionstab.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStripactionstab.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.dropOutToolStripMenuItem});
             this.contextMenuStripactionstab.Name = "contextMenuStripactionstab";
@@ -500,6 +504,8 @@
             // 
             // tabActions
             // 
+            this.tabActions.Controls.Add(this.BUT_camon);
+            this.tabActions.Controls.Add(this.BUT_camoff);
             this.tabActions.Controls.Add(this.BUT_resumemis);
             this.tabActions.Controls.Add(this.CMB_mountmode);
             this.tabActions.Controls.Add(this.BUT_mountmode);
@@ -548,8 +554,8 @@
             // 
             // modifyandSetSpeed
             // 
-            resources.ApplyResources(this.modifyandSetSpeed, "modifyandSetSpeed");
             this.modifyandSetSpeed.ButtonText = "Change Speed";
+            resources.ApplyResources(this.modifyandSetSpeed, "modifyandSetSpeed");
             this.modifyandSetSpeed.Name = "modifyandSetSpeed";
             this.modifyandSetSpeed.Value = new decimal(new int[] {
             100,
@@ -561,8 +567,8 @@
             // 
             // modifyandSetAlt
             // 
-            resources.ApplyResources(this.modifyandSetAlt, "modifyandSetAlt");
             this.modifyandSetAlt.ButtonText = "Change Alt";
+            resources.ApplyResources(this.modifyandSetAlt, "modifyandSetAlt");
             this.modifyandSetAlt.Name = "modifyandSetAlt";
             this.modifyandSetAlt.Value = new decimal(new int[] {
             100,
@@ -1565,6 +1571,7 @@
             // 
             // contextMenuStripMap
             // 
+            this.contextMenuStripMap.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStripMap.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.goHereToolStripMenuItem,
             this.flyToHereAltToolStripMenuItem,
@@ -1653,7 +1660,7 @@
             this.windDir1.BackColor = System.Drawing.Color.Transparent;
             this.windDir1.DataBindings.Add(new System.Windows.Forms.Binding("Direction", this.bindingSource1, "wind_dir", true, System.Windows.Forms.DataSourceUpdateMode.Never));
             this.windDir1.DataBindings.Add(new System.Windows.Forms.Binding("Speed", this.bindingSource1, "wind_vel", true, System.Windows.Forms.DataSourceUpdateMode.Never));
-            this.windDir1.Direction = 360D;
+            this.windDir1.Direction = 180D;
             resources.ApplyResources(this.windDir1, "windDir1");
             this.windDir1.Name = "windDir1";
             this.windDir1.Speed = 0D;
@@ -1863,12 +1870,28 @@
             // 
             this.bindingSourceStatusTab.DataSource = typeof(MissionPlanner.CurrentState);
             // 
+            // BUT_camoff
+            // 
+            resources.ApplyResources(this.BUT_camoff, "BUT_camoff");
+            this.BUT_camoff.Name = "BUT_camoff";
+            this.toolTip1.SetToolTip(this.BUT_camoff, resources.GetString("BUT_camoff.ToolTip"));
+            this.BUT_camoff.UseVisualStyleBackColor = true;
+            this.BUT_camoff.Click += new System.EventHandler(this.BUT_camoff_Click);
+            // 
+            // BUT_camon
+            // 
+            resources.ApplyResources(this.BUT_camon, "BUT_camon");
+            this.BUT_camon.Name = "BUT_camon";
+            this.toolTip1.SetToolTip(this.BUT_camon, resources.GetString("BUT_camon.ToolTip"));
+            this.BUT_camon.UseVisualStyleBackColor = true;
+            this.BUT_camon.Click += new System.EventHandler(this.BUT_camon_Click);
+            // 
             // FlightData
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.MainH);
-            this.MinimumSize = new System.Drawing.Size(1008, 462);
+            this.MinimumSize = new System.Drawing.Size(1512, 711);
             this.Name = "FlightData";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FlightData_FormClosing);
             this.Load += new System.EventHandler(this.FlightData_Load);
@@ -2067,6 +2090,7 @@
         private Controls.DistanceBar distanceBar1;
         private System.Windows.Forms.ToolStripMenuItem takeOffToolStripMenuItem;
         private Controls.MyButton BUT_resumemis;
-
+        private Controls.MyButton BUT_camon;
+        private Controls.MyButton BUT_camoff;
     }
 }

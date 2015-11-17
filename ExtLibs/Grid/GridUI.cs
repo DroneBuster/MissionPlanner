@@ -701,7 +701,7 @@ namespace MissionPlanner
             else
             {
                 // Meters
-                lbl_area.Text = calcpolygonarea(list).ToString("#") + " m^2";
+                lbl_area.Text = (calcpolygonarea(list) * 0.0001f).ToString("#.00") + " ha";
                 lbl_distance.Text = routetotal.ToString("0.##") + " km";
                 lbl_spacing.Text = NUM_spacing.Value.ToString("#") + " m";
                 lbl_grndres.Text = TXT_cmpixel.Text;

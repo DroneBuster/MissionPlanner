@@ -3564,5 +3564,29 @@ namespace MissionPlanner.GCSViews
             frm.TopMost = true;
             frm.Show();
         }
+
+        private void BUT_camon_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ((Button)sender).Enabled = false;
+                if (!MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_DIGICAM_CONTROL, 1, 0, 0, 0, 0, 0, 0))
+                    CustomMessageBox.Show("The Command failed to execute", "Error");
+            }
+            catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
+            ((Button)sender).Enabled = true;
+        }
+
+        private void BUT_camoff_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ((Button)sender).Enabled = false;
+                if (!MainV2.comPort.doCommand(MAVLink.MAV_CMD.DO_DIGICAM_CONTROL, 2, 0, 0, 0, 0, 0, 0))
+                    CustomMessageBox.Show("The Command failed to execute", "Error");
+            }
+            catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
+            ((Button)sender).Enabled = true;
+        }
     }
 }

@@ -1509,7 +1509,7 @@ namespace MissionPlanner.GCSViews
         {
             using (SaveFileDialog fd = new SaveFileDialog())
             {
-                fd.Filter = "Ardupilot Mission (*.waypoints)|(*.txt)|*.*";
+                fd.Filter = "Ardupilot Mission (*.txt)|*.txt|All files|*.*";
                 fd.DefaultExt = ".txt";
                 fd.FileName = wpfilename;
                 DialogResult result = fd.ShowDialog();
