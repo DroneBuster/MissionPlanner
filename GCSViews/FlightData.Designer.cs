@@ -33,8 +33,6 @@
             this.quickView3 = new MissionPlanner.Controls.QuickView();
             this.quickView2 = new MissionPlanner.Controls.QuickView();
             this.quickView1 = new MissionPlanner.Controls.QuickView();
-            this.tabpreflight = new System.Windows.Forms.TabPage();
-            this.preFlightChecklist1 = new MissionPlanner.GCSViews.ConfigurationView.PreFlightChecklist();
             this.tabActions = new System.Windows.Forms.TabPage();
             this.BUT_resumemis = new MissionPlanner.Controls.MyButton();
             this.CMB_mountmode = new System.Windows.Forms.ComboBox();
@@ -167,7 +165,6 @@
             this.tabQuick.SuspendLayout();
             this.tableLayoutPanelQuick.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceQuickTab)).BeginInit();
-            this.tabpreflight.SuspendLayout();
             this.tabActions.SuspendLayout();
             this.tabActionsSimple.SuspendLayout();
             this.tabGauges.SuspendLayout();
@@ -370,7 +367,6 @@
             // 
             this.tabControlactions.ContextMenuStrip = this.contextMenuStripactionstab;
             this.tabControlactions.Controls.Add(this.tabQuick);
-            this.tabControlactions.Controls.Add(this.tabpreflight);
             this.tabControlactions.Controls.Add(this.tabActions);
             this.tabControlactions.Controls.Add(this.tabActionsSimple);
             this.tabControlactions.Controls.Add(this.tabGauges);
@@ -489,18 +485,6 @@
             this.quickView1.numberformat = "0.00";
             this.toolTip1.SetToolTip(this.quickView1, resources.GetString("quickView1.ToolTip"));
             this.quickView1.DoubleClick += new System.EventHandler(this.quickView_DoubleClick);
-            // 
-            // tabpreflight
-            // 
-            resources.ApplyResources(this.tabpreflight, "tabpreflight");
-            this.tabpreflight.Controls.Add(this.preFlightChecklist1);
-            this.tabpreflight.Name = "tabpreflight";
-            this.tabpreflight.UseVisualStyleBackColor = true;
-            // 
-            // preFlightChecklist1
-            // 
-            resources.ApplyResources(this.preFlightChecklist1, "preFlightChecklist1");
-            this.preFlightChecklist1.Name = "preFlightChecklist1";
             // 
             // tabActions
             // 
@@ -1912,7 +1896,6 @@
             this.tabQuick.ResumeLayout(false);
             this.tableLayoutPanelQuick.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceQuickTab)).EndInit();
-            this.tabpreflight.ResumeLayout(false);
             this.tabActions.ResumeLayout(false);
             this.tabActionsSimple.ResumeLayout(false);
             this.tabGauges.ResumeLayout(false);
@@ -1975,7 +1958,7 @@
         private System.Windows.Forms.NumericUpDown Zoomlevel;
         private Controls.MyLabel label1;
         private System.Windows.Forms.CheckBox CHK_autopan;
-        private Controls.myGMAP gMapControl1;
+        public Controls.myGMAP gMapControl1;
         private ZedGraph.ZedGraphControl zg1;
         private System.Windows.Forms.TabControl tabControlactions;
         private System.Windows.Forms.TabPage tabGauges;
@@ -2004,7 +1987,6 @@
         private System.Windows.Forms.ToolStripMenuItem setMJPEGSourceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setAspectRatioToolStripMenuItem;
         private System.Windows.Forms.TabPage tabQuick;
-        private System.Windows.Forms.TabPage tabpreflight;
         private Controls.QuickView quickView3;
         private Controls.QuickView quickView2;
         private Controls.QuickView quickView1;
@@ -2077,7 +2059,6 @@
         private System.Windows.Forms.TextBox txt_messagebox;
         private System.Windows.Forms.Timer Messagetabtimer;
         private System.Windows.Forms.TabPage tabActionsSimple;
-        private ConfigurationView.PreFlightChecklist preFlightChecklist1;
         private Controls.MyButton myButton1;
         private Controls.MyButton myButton2;
         private Controls.MyButton myButton3;
