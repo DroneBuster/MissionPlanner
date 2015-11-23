@@ -72,6 +72,8 @@ namespace MissionPlanner.GCSViews
         internal static GMapOverlay geofence;
         internal static GMapOverlay rallypointoverlay;
         internal static GMapOverlay poioverlay = new GMapOverlay("POI"); // poi layer
+        internal static GMapOverlay camfootprintsoverlay;
+        internal static List<GMapPolygon> campolys = new List<GMapPolygon>();
 
         Dictionary<Guid, Form> formguids = new Dictionary<Guid, Form>();
 
@@ -310,6 +312,9 @@ namespace MissionPlanner.GCSViews
             gMapControl1.Overlays.Add(rallypointoverlay);
 
             gMapControl1.Overlays.Add(poioverlay);
+
+            camfootprintsoverlay = new GMapOverlay("cam footprins");
+            gMapControl1.Overlays.Add(camfootprintsoverlay);
 
             try
             {
@@ -1137,6 +1142,15 @@ namespace MissionPlanner.GCSViews
                                 rallypointoverlay.Markers.Add(new GMapMarkerRallyPt(mark));
                             }
 
+                            camfootprintsoverlay.Polygons.Clear();
+                            if (CHK_camfoot.Checked)
+                            {
+                                foreach (var poly in campolys)
+                                {
+                                    camfootprintsoverlay.Polygons.Add(poly);
+                                }
+                            }
+
                             // optional on Flight data
                             if (MainV2.ShowAirports)
                             {
@@ -1741,6 +1755,8 @@ namespace MissionPlanner.GCSViews
         {
             if (route != null)
                 route.Points.Clear();
+            camfootprintsoverlay.Clear();
+            campolys.Clear();
         }
 
         private void BUTactiondo_Click(object sender, EventArgs e)
@@ -3819,6 +3835,52 @@ namespace MissionPlanner.GCSViews
             }
             catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
             ((Button)sender).Enabled = true;
+        }
+
+        public void add_camera_location(MAVLink.mavlink_camera_feedback_t msg)
+        {
+            float focallen = 4.5f;
+            float flyalt = msg.alt_rel;
+            int imagewidth = 4000;
+            int imageheight = 3000;
+
+            float sensorwidth = 6.17f; //mm
+            float sensorheight = 4.55f; //mm
+
+
+            // scale      mm / mm
+            float flscale = (1000 * flyalt) / focallen;
+
+            //   mm * mm / 1000
+            float viewwidth = (sensorwidth * flscale / 1000);
+            float viewheight = (sensorheight * flscale / 1000);
+
+            float fovh = viewwidth;//(float)(Math.Atan(sensorwidth / (2 * focallen)) * rad2deg * 2);
+            float fovv = viewheight;//(float)(Math.Atan(sensorheight / (2 * focallen)) * rad2deg * 2);
+
+            int a = 1;//msg.img_idx;
+
+            double startangle = 0;
+
+            double angle1 = startangle - (Math.Tan((fovv / 2.0) / (fovh / 2.0)) * rad2deg);
+            double dist1 = Math.Sqrt(Math.Pow(fovh / 2.0, 2) + Math.Pow(fovv / 2.0, 2));
+
+            double bearing = msg.yaw;
+
+            List<PointLatLng> footprint = new List<PointLatLng>();
+            double lat = msg.lat / 10000000.0;
+            double lng = msg.lng / 10000000.0;
+            PointLatLngAlt pos = new PointLatLngAlt(lat, lng, msg.alt_rel);
+            footprint.Add(pos.newpos(bearing + angle1, dist1));
+            footprint.Add(pos.newpos(bearing + 180 - angle1, dist1));
+            footprint.Add(pos.newpos(bearing + 180 + angle1, dist1));
+            footprint.Add(pos.newpos(bearing - angle1, dist1));
+
+            GMapPolygon poly = new GMapPolygon(footprint, a.ToString());
+            poly.Stroke = new Pen(Color.FromArgb(250 - ((a * 5) % 240), 250 - ((a * 3) % 240), 250 - ((a * 9) % 240)), 1);
+            poly.Fill = new SolidBrush(Color.FromArgb(20, Color.Purple));
+            campolys.Add(poly);
+           // camfootprintsoverlay.Polygons.Add(poly);
         }
     }
 }

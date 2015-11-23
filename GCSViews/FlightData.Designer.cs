@@ -34,6 +34,8 @@
             this.quickView2 = new MissionPlanner.Controls.QuickView();
             this.quickView1 = new MissionPlanner.Controls.QuickView();
             this.tabActions = new System.Windows.Forms.TabPage();
+            this.BUT_camon = new MissionPlanner.Controls.MyButton();
+            this.BUT_camoff = new MissionPlanner.Controls.MyButton();
             this.BUT_resumemis = new MissionPlanner.Controls.MyButton();
             this.CMB_mountmode = new System.Windows.Forms.ComboBox();
             this.BUT_mountmode = new MissionPlanner.Controls.MyButton();
@@ -148,8 +150,7 @@
             this.dataGridViewImageColumn2 = new System.Windows.Forms.DataGridViewImageColumn();
             this.Messagetabtimer = new System.Windows.Forms.Timer(this.components);
             this.bindingSourceStatusTab = new System.Windows.Forms.BindingSource(this.components);
-            this.BUT_camoff = new MissionPlanner.Controls.MyButton();
-            this.BUT_camon = new MissionPlanner.Controls.MyButton();
+            this.CHK_camfoot = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.MainH)).BeginInit();
             this.MainH.Panel1.SuspendLayout();
             this.MainH.Panel2.SuspendLayout();
@@ -513,6 +514,22 @@
             resources.ApplyResources(this.tabActions, "tabActions");
             this.tabActions.Name = "tabActions";
             this.tabActions.UseVisualStyleBackColor = true;
+            // 
+            // BUT_camon
+            // 
+            resources.ApplyResources(this.BUT_camon, "BUT_camon");
+            this.BUT_camon.Name = "BUT_camon";
+            this.toolTip1.SetToolTip(this.BUT_camon, resources.GetString("BUT_camon.ToolTip"));
+            this.BUT_camon.UseVisualStyleBackColor = true;
+            this.BUT_camon.Click += new System.EventHandler(this.BUT_camon_Click);
+            // 
+            // BUT_camoff
+            // 
+            resources.ApplyResources(this.BUT_camoff, "BUT_camoff");
+            this.BUT_camoff.Name = "BUT_camoff";
+            this.toolTip1.SetToolTip(this.BUT_camoff, resources.GetString("BUT_camoff.ToolTip"));
+            this.BUT_camoff.UseVisualStyleBackColor = true;
+            this.BUT_camoff.Click += new System.EventHandler(this.BUT_camoff_Click);
             // 
             // BUT_resumemis
             // 
@@ -1737,6 +1754,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.CHK_camfoot);
             this.panel1.Controls.Add(this.coords1);
             this.panel1.Controls.Add(this.Zoomlevel);
             this.panel1.Controls.Add(this.label1);
@@ -1854,21 +1872,12 @@
             // 
             this.bindingSourceStatusTab.DataSource = typeof(MissionPlanner.CurrentState);
             // 
-            // BUT_camoff
+            // CHK_camfoot
             // 
-            resources.ApplyResources(this.BUT_camoff, "BUT_camoff");
-            this.BUT_camoff.Name = "BUT_camoff";
-            this.toolTip1.SetToolTip(this.BUT_camoff, resources.GetString("BUT_camoff.ToolTip"));
-            this.BUT_camoff.UseVisualStyleBackColor = true;
-            this.BUT_camoff.Click += new System.EventHandler(this.BUT_camoff_Click);
-            // 
-            // BUT_camon
-            // 
-            resources.ApplyResources(this.BUT_camon, "BUT_camon");
-            this.BUT_camon.Name = "BUT_camon";
-            this.toolTip1.SetToolTip(this.BUT_camon, resources.GetString("BUT_camon.ToolTip"));
-            this.BUT_camon.UseVisualStyleBackColor = true;
-            this.BUT_camon.Click += new System.EventHandler(this.BUT_camon_Click);
+            resources.ApplyResources(this.CHK_camfoot, "CHK_camfoot");
+            this.CHK_camfoot.Name = "CHK_camfoot";
+            this.toolTip1.SetToolTip(this.CHK_camfoot, resources.GetString("CHK_camfoot.ToolTip"));
+            this.CHK_camfoot.UseVisualStyleBackColor = true;
             // 
             // FlightData
             // 
@@ -2073,5 +2082,6 @@
         private Controls.MyButton BUT_resumemis;
         private Controls.MyButton BUT_camon;
         private Controls.MyButton BUT_camoff;
+        private System.Windows.Forms.CheckBox CHK_camfoot;
     }
 }

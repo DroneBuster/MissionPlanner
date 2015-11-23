@@ -6,6 +6,7 @@ using System.ComponentModel;
 using MissionPlanner.Utilities;
 using log4net;
 using MissionPlanner.Attributes;
+using MissionPlanner.GCSViews;
 using MissionPlanner;
 using System.Collections;
 
@@ -1955,6 +1956,15 @@ namespace MissionPlanner
                         var mem = bytearray.ByteArrayToStructure<MAVLink.mavlink_meminfo_t>(6);
                         freemem = mem.freemem;
                         brklevel = mem.brkval;
+                    }
+
+                    bytearray = MAV.packets[(byte)MAVLink.MAVLINK_MSG_ID.CAMERA_FEEDBACK];
+                    if(bytearray != null)
+                    {
+                         var camerafb = bytearray.ByteArrayToStructure<MAVLink.mavlink_camera_feedback_t>(6);
+                        FlightData.instance.add_camera_location(camerafb);
+                        MAV.packets[(byte)MAVLink.MAVLINK_MSG_ID.CAMERA_FEEDBACK] = null;
+
                     }
                 }
 
