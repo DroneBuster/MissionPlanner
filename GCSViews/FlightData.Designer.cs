@@ -137,6 +137,7 @@
             this.gMapControl1 = new MissionPlanner.Controls.myGMAP();
             this.TRK_zoom = new MissionPlanner.Controls.MyTrackBar();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.CHK_camfoot = new System.Windows.Forms.CheckBox();
             this.coords1 = new MissionPlanner.Controls.Coords();
             this.Zoomlevel = new System.Windows.Forms.NumericUpDown();
             this.label1 = new MissionPlanner.Controls.MyLabel();
@@ -150,7 +151,6 @@
             this.dataGridViewImageColumn2 = new System.Windows.Forms.DataGridViewImageColumn();
             this.Messagetabtimer = new System.Windows.Forms.Timer(this.components);
             this.bindingSourceStatusTab = new System.Windows.Forms.BindingSource(this.components);
-            this.CHK_camfoot = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.MainH)).BeginInit();
             this.MainH.Panel1.SuspendLayout();
             this.MainH.Panel2.SuspendLayout();
@@ -1661,7 +1661,7 @@
             this.windDir1.BackColor = System.Drawing.Color.Transparent;
             this.windDir1.DataBindings.Add(new System.Windows.Forms.Binding("Direction", this.bindingSource1, "wind_dir", true, System.Windows.Forms.DataSourceUpdateMode.Never));
             this.windDir1.DataBindings.Add(new System.Windows.Forms.Binding("Speed", this.bindingSource1, "wind_vel", true, System.Windows.Forms.DataSourceUpdateMode.Never));
-            this.windDir1.Direction = 180D;
+            this.windDir1.Direction = 360D;
             resources.ApplyResources(this.windDir1, "windDir1");
             this.windDir1.Name = "windDir1";
             this.windDir1.Speed = 0D;
@@ -1762,6 +1762,13 @@
             this.panel1.Controls.Add(this.CB_tuning);
             resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Name = "panel1";
+            // 
+            // CHK_camfoot
+            // 
+            resources.ApplyResources(this.CHK_camfoot, "CHK_camfoot");
+            this.CHK_camfoot.Name = "CHK_camfoot";
+            this.toolTip1.SetToolTip(this.CHK_camfoot, resources.GetString("CHK_camfoot.ToolTip"));
+            this.CHK_camfoot.UseVisualStyleBackColor = true;
             // 
             // coords1
             // 
@@ -1871,13 +1878,6 @@
             // bindingSourceStatusTab
             // 
             this.bindingSourceStatusTab.DataSource = typeof(MissionPlanner.CurrentState);
-            // 
-            // CHK_camfoot
-            // 
-            resources.ApplyResources(this.CHK_camfoot, "CHK_camfoot");
-            this.CHK_camfoot.Name = "CHK_camfoot";
-            this.toolTip1.SetToolTip(this.CHK_camfoot, resources.GetString("CHK_camfoot.ToolTip"));
-            this.CHK_camfoot.UseVisualStyleBackColor = true;
             // 
             // FlightData
             // 
