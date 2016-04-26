@@ -978,11 +978,11 @@ namespace MissionPlanner
         static CurrentState()
         {
             // set default telemrates
-            rateattitudebackup = 6;
-            ratepositionbackup = 2;
-            ratestatusbackup = 2;
-            ratesensorsbackup = 2;
-            ratercbackup = 2;
+            rateattitudebackup = 1;
+            ratepositionbackup = 1;
+            ratestatusbackup = 1;
+            ratesensorsbackup = 1;
+            ratercbackup = 1;
         }
 
         public CurrentState()
