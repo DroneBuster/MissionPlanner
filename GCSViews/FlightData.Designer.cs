@@ -37,6 +37,8 @@
             this.quickView2 = new MissionPlanner.Controls.QuickView();
             this.quickView1 = new MissionPlanner.Controls.QuickView();
             this.tabActions = new System.Windows.Forms.TabPage();
+            this.BUT_camon = new MissionPlanner.Controls.MyButton();
+            this.BUT_camoff = new MissionPlanner.Controls.MyButton();
             this.modifyandSetLoiterRad = new MissionPlanner.Controls.ModifyandSet();
             this.BUT_abortland = new MissionPlanner.Controls.MyButton();
             this.BUT_resumemis = new MissionPlanner.Controls.MyButton();
@@ -323,6 +325,7 @@
             // 
             // contextMenuStripHud
             // 
+            this.contextMenuStripHud.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStripHud.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.videoToolStripMenuItem,
             this.setAspectRatioToolStripMenuItem,
@@ -416,6 +419,7 @@
             // 
             // contextMenuStripactionstab
             // 
+            this.contextMenuStripactionstab.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStripactionstab.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.customizeToolStripMenuItem});
             this.contextMenuStripactionstab.Name = "contextMenuStripactionstab";
@@ -519,6 +523,8 @@
             // 
             // tabActions
             // 
+            this.tabActions.Controls.Add(this.BUT_camon);
+            this.tabActions.Controls.Add(this.BUT_camoff);
             this.tabActions.Controls.Add(this.modifyandSetLoiterRad);
             this.tabActions.Controls.Add(this.BUT_abortland);
             this.tabActions.Controls.Add(this.BUT_resumemis);
@@ -544,6 +550,22 @@
             resources.ApplyResources(this.tabActions, "tabActions");
             this.tabActions.Name = "tabActions";
             this.tabActions.UseVisualStyleBackColor = true;
+            // 
+            // BUT_camon
+            // 
+            resources.ApplyResources(this.BUT_camon, "BUT_camon");
+            this.BUT_camon.Name = "BUT_camon";
+            this.toolTip1.SetToolTip(this.BUT_camon, resources.GetString("BUT_camon.ToolTip"));
+            this.BUT_camon.UseVisualStyleBackColor = true;
+            this.BUT_camon.Click += new System.EventHandler(this.BUT_camon_Click);
+            // 
+            // BUT_camoff
+            // 
+            resources.ApplyResources(this.BUT_camoff, "BUT_camoff");
+            this.BUT_camoff.Name = "BUT_camoff";
+            this.toolTip1.SetToolTip(this.BUT_camoff, resources.GetString("BUT_camoff.ToolTip"));
+            this.BUT_camoff.UseVisualStyleBackColor = true;
+            this.BUT_camoff.Click += new System.EventHandler(this.BUT_camoff_Click);
             // 
             // modifyandSetLoiterRad
             // 
@@ -1649,6 +1671,7 @@
             // 
             // contextMenuStripMap
             // 
+            this.contextMenuStripMap.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStripMap.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.goHereToolStripMenuItem,
             this.flyToHereAltToolStripMenuItem,
@@ -1982,7 +2005,7 @@
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.MainH);
-            this.MinimumSize = new System.Drawing.Size(1008, 462);
+            this.MinimumSize = new System.Drawing.Size(1512, 711);
             this.Name = "FlightData";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FlightData_FormClosing);
             this.Load += new System.EventHandler(this.FlightData_Load);
@@ -2190,5 +2213,7 @@
         private System.Windows.Forms.ToolStripMenuItem PointCameraCoordsToolStripMenuItem1;
         private Controls.ModifyandSet modifyandSetLoiterRad;
         private System.Windows.Forms.ToolStripMenuItem onOffCameraOverlapToolStripMenuItem;
+        private Controls.MyButton BUT_camon;
+        private Controls.MyButton BUT_camoff;
     }
 }
