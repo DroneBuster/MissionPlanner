@@ -1030,7 +1030,6 @@ Please check the following
             // create new list so if canceled we use the old list
             MAVLinkParamList newparamlist = new MAVLinkParamList();
 
-            int param_count = 0;
             int param_total = 1;
 
             mavlink_param_request_list_t req = new mavlink_param_request_list_t();
@@ -1170,8 +1169,9 @@ Please check the following
 
                         //Console.WriteLine(DateTime.Now.Millisecond + " gp2b ");
 
-                        param_count++;
-                        indexsreceived.Add(par.param_index);
+                        // exclude index of 65535
+                        if (par.param_index != 65535)
+                            indexsreceived.Add(par.param_index);
 
                         MAV.param_types[paramID] = (MAV_PARAM_TYPE) par.param_type;
 
@@ -1303,7 +1303,7 @@ Please check the following
                 buffer = readPacket();
                 if (buffer.Length > 5)
                 {
-                    if (buffer.msgid == (byte) MAVLINK_MSG_ID.PARAM_VALUE)
+                    if (buffer.msgid == (byte)MAVLINK_MSG_ID.PARAM_VALUE && buffer.sysid == req.target_system && buffer.compid == req.target_component)
                     {
                         giveComport = false;
 
@@ -2585,6 +2585,35 @@ Please check the following
             // return MAV_MISSION_RESULT.MAV_MISSION_INVALID;
         }
 
+        public int getRequestedWPNo()
+        {
+            giveComport = true;
+            DateTime start = DateTime.Now;
+
+            while (true)
+            {
+                if (!(start.AddMilliseconds(1500) > DateTime.Now))
+                {
+                    giveComport = false;
+                    throw new TimeoutException("Timeout on read - getRequestedWPNo");
+                }
+                MAVLinkMessage buffer = readPacket();
+                if (buffer.Length > 5)
+                {
+                    if (buffer.msgid == (byte) MAVLINK_MSG_ID.MISSION_REQUEST)
+                    {
+                        var ans = buffer.ToStructure<mavlink_mission_request_t>();
+
+                        log.InfoFormat("getRequestedWPNo seq {0} ts {1} tc {2}", ans.seq, ans.target_system, ans.target_component);
+
+                        giveComport = false;
+
+                        return ans.seq;
+                    }
+                }
+            }
+        }
+
         public void setNextWPTargetAlt(ushort wpno, float alt)
         {
             // get the existing wp
@@ -2966,9 +2995,18 @@ Please check the following
             _bytesReceivedSubj.OnNext(buffer.Length);
 
             // update bps statistics
-            if (bpstime.Second != DateTime.Now.Second && !logreadmode && BaseStream.IsOpen)
+            if (bpstime.Second != DateTime.Now.Second)
             {
-                Console.Write("bps {0} loss {1} left {2} mem {3}      \n", bps1, MAV.synclost, BaseStream.BytesToRead,
+                long btr = 0;
+                if (BaseStream != null && BaseStream.IsOpen)
+                {
+                    btr = BaseStream.BytesToRead;
+                }
+                else if (logreadmode)
+                {
+                    btr = logplaybackfile.BaseStream.Length - logplaybackfile.BaseStream.Position;
+                }
+                Console.Write("bps {0} loss {1} left {2} mem {3}      \n", bps1, MAV.synclost, btr,
                     System.GC.GetTotalMemory(false)/1024/1024.0);
                 bps2 = bps1; // prev sec
                 bps1 = 0; // current sec
@@ -3243,6 +3281,9 @@ Please check the following
                                 printit = true;
                             }
                         }
+
+                        if (logdata.StartsWith("Tuning:"))
+                            printit = true;
 
                         if (printit)
                         {

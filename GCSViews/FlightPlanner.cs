@@ -172,7 +172,7 @@ namespace MissionPlanner.GCSViews
             DataGridViewTextBoxCell cell;
             if (alt == -2 && Commands.Columns[Alt.Index].HeaderText.Equals(cmdParamNames["WAYPOINT"][6] /*"Alt"*/))
             {
-                if (CHK_verifyheight.Checked) //Drag with verifyheight // use srtm data
+                if (CHK_verifyheight.Checked && (altmode)CMB_altmode.SelectedValue != altmode.Terrain) //Drag with verifyheight // use srtm data
                 {
                     cell = Commands.Rows[selectedrow].Cells[Alt.Index] as DataGridViewTextBoxCell;
                     float ans;
@@ -265,6 +265,10 @@ namespace MissionPlanner.GCSViews
                             cell.Value =
                                 ((srtm.getAltitude(lat, lng).alt)*CurrentState.multiplierdist +
                                  int.Parse(TXT_DefaultAlt.Text)).ToString();
+                        }
+                        else if ((altmode) CMB_altmode.SelectedValue == altmode.Terrain)
+                        {
+                            cell.Value = int.Parse(TXT_DefaultAlt.Text);
                         }
                         else
                         {
@@ -2082,10 +2086,9 @@ namespace MissionPlanner.GCSViews
                 var commandlist = GetCommandList();
 
                 // process commandlist to the mav
-                foreach (var temp in commandlist)
+                for (a = 1; a <= commandlist.Count; a++)
                 {
-                    // this code below fails
-                    //a = commandlist.IndexOf(temp) + 1;
+                    var temp = commandlist[a-1];
 
                     ((ProgressReporterDialogue) sender).UpdateProgressAndStatus(a*100/Commands.Rows.Count,
                         "Setting WP " + a);
@@ -2136,8 +2139,13 @@ namespace MissionPlanner.GCSViews
                     if (ans == MAVLink.MAV_MISSION_RESULT.MAV_MISSION_INVALID_SEQUENCE)
                     {
                         // invalid sequence can only occur if we failed to see a response from the apm when we sent the request.
-                        // therefore it did see the request and has moved on that step, and so do we.
-                        a++;
+                        // or there is io lag and we send 2 mission_items and get 2 responces, one valid, one a ack of the second send
+                        
+                        // the ans is received via mission_ack, so we dont know for certain what our current request is for. as we may have lost the mission_request
+
+                        // get requested wp no - 1;
+                        a = port.getRequestedWPNo() - 1;
+
                         continue;
                     }
                     if (ans != MAVLink.MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED)
@@ -2146,8 +2154,6 @@ namespace MissionPlanner.GCSViews
                                          " " + Enum.Parse(typeof (MAVLink.MAV_MISSION_RESULT), ans.ToString());
                         return;
                     }
-
-                    a++;
                 }
 
                 port.setWPACK();
