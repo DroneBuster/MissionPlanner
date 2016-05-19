@@ -536,6 +536,12 @@
     <Compile Include="GCSViews\ConfigurationView\ConfigHWCompass.Designer.cs">
       <DependentUpon>ConfigHWCompass.cs</DependentUpon>
     </Compile>
+    <Compile Include="GCSViews\ConfigurationView\ConfigHWPX4Flow.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GCSViews\ConfigurationView\ConfigHWPX4Flow.Designer.cs">
+      <DependentUpon>ConfigHWPX4Flow.cs</DependentUpon>
+    </Compile>
     <Compile Include="GCSViews\ConfigurationView\ConfigHWOptFlow.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -820,7 +826,9 @@
     </Compile>
     <Compile Include="System.cs" />
     <Compile Include="Utilities\Airports.cs" />
+    <Compile Include="Utilities\AP_GPS_base.cs" />
     <Compile Include="Utilities\AP_GPS_GSOF.cs" />
+    <Compile Include="Utilities\AP_GPS_NOVA.cs" />
     <Compile Include="Utilities\AP_GPS_SBF.cs" />
     <Compile Include="Utilities\AP_Terrain.cs" />
     <Compile Include="Utilities\GMapMarkerOverlapCount.cs" />
@@ -1544,6 +1552,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GCSViews\ConfigurationView\ConfigHWCompass.zh-TW.resx">
       <DependentUpon>ConfigHWCompass.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GCSViews\ConfigurationView\ConfigHWPX4Flow.resx">
+      <DependentUpon>ConfigHWPX4Flow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GCSViews\ConfigurationView\ConfigHWOptFlow.de-DE.resx">
       <DependentUpon>ConfigHWOptFlow.cs</DependentUpon>
