@@ -1788,6 +1788,13 @@ namespace MissionPlanner
                         //MAVLink.packets[(byte)MAVLink.MSG_NAMES.NAV_CONTROLLER_OUTPUT);
                     }
 
+                    mavLinkMessage = MAV.getPacket((uint)MAVLink.MAVLINK_MSG_ID.OT_PARACHUTE_STATUS);
+                    if(mavLinkMessage != null)
+                    {
+                        var par_status = mavLinkMessage.ToStructure<MAVLink.mavlink_ot_parachute_status_t>();
+                        ot_fs_status = par_status.fs_status; 
+                    }
+
                     mavLinkMessage = MAV.getPacket((uint) MAVLink.MAVLINK_MSG_ID.RC_CHANNELS_RAW);
                     if (mavLinkMessage != null)
                     {
@@ -2425,6 +2432,8 @@ namespace MissionPlanner
         public float rpm1 { get; set; }
 
         public float rpm2 { get; set; }
+
+        public uint ot_fs_status { get; set; }
 
         public MAVLink.MAV_PROTOCOL_CAPABILITY capabilities { get; set; }
     }

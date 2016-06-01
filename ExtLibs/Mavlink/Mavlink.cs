@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 public partial class MAVLink
 {
-    public const string MAVLINK_BUILD_DATE = "Fri Apr 22 2016";
+    public const string MAVLINK_BUILD_DATE = "Fri May 20 2016";
     public const string MAVLINK_WIRE_PROTOCOL_VERSION = "2.0";
     public const int MAVLINK_MAX_PAYLOAD_LEN = 255;
 
@@ -199,6 +199,7 @@ public partial class MAVLink
 		new message_info(218, "GOPRO_SET_REQUEST", 17, 7, typeof( mavlink_gopro_set_request_t )),
 		new message_info(219, "GOPRO_SET_RESPONSE", 162, 2, typeof( mavlink_gopro_set_response_t )),
 		new message_info(226, "RPM", 207, 8, typeof( mavlink_rpm_t )),
+		new message_info(227, "OT_PARACHUTE_STATUS", 9, 4, typeof( mavlink_ot_parachute_status_t )),
 		new message_info(241, "VIBRATION", 90, 32, typeof( mavlink_vibration_t )),
 		new message_info(242, "HOME_POSITION", 104, 52, typeof( mavlink_home_position_t )),
 		new message_info(243, "SET_HOME_POSITION", 85, 53, typeof( mavlink_set_home_position_t )),
@@ -470,6 +471,7 @@ GOPRO_GET_RESPONSE = 217,
 GOPRO_SET_REQUEST = 218,
 GOPRO_SET_RESPONSE = 219,
 RPM = 226,
+OT_PARACHUTE_STATUS = 227,
 VIBRATION = 241,
 HOME_POSITION = 242,
 SET_HOME_POSITION = 243,
@@ -593,6 +595,8 @@ SETUP_SIGNING = 256,
         DO_GRIPPER=211, 
     	///<summary> Enable/disable autotune |enable (1: enable, 0:disable)| Empty| Empty| Empty| Empty| Empty| Empty|  </summary>
         DO_AUTOTUNE_ENABLE=212, 
+    	///<summary> Mission command which control parachute |Enable FS (0=disable, 1=enable, 42=reset)| Land immediately(0=not, 1=land| Set ignition(0=nochange, 1=on, 2=off)| Set Parachute servo(0=nochange, 1=close, 2=open)| Empty| Empty| Empty|  </summary>
+        OT_PARACHUTE=214, 
     	///<summary> Mission command to control a camera or antenna mount, using a quaternion as reference. |q1 - quaternion param #1, w (1 in null-rotation)| q2 - quaternion param #2, x (0 in null-rotation)| q3 - quaternion param #3, y (0 in null-rotation)| q4 - quaternion param #4, z (0 in null-rotation)| Empty| Empty| Empty|  </summary>
         DO_MOUNT_CONTROL_QUAT=220, 
     	///<summary> set id of master controller |System ID| Component ID| Empty| Empty| Empty| Empty| Empty|  </summary>
@@ -3292,6 +3296,21 @@ SETUP_SIGNING = 256,
         public  Single rpm1;
             /// <summary> RPM Sensor2 </summary>
         public  Single rpm2;
+    
+    };
+
+
+    [StructLayout(LayoutKind.Sequential,Pack=1,Size=4)]
+    public struct mavlink_ot_parachute_status_t
+    {
+        /// <summary> OT FS status </summary>
+        public  byte fs_status;
+            /// <summary> Parachute servo position </summary>
+        public  byte para_servo_position;
+            /// <summary> Ignition status </summary>
+        public  byte ignition_status;
+            /// <summary> Gimbal position </summary>
+        public  byte gimbal_position;
     
     };
 
