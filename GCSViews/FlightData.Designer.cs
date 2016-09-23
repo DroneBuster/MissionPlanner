@@ -37,6 +37,12 @@
             this.quickView2 = new MissionPlanner.Controls.QuickView();
             this.quickView1 = new MissionPlanner.Controls.QuickView();
             this.tabActions = new System.Windows.Forms.TabPage();
+            this.gimb_down = new MissionPlanner.Controls.MyButton();
+            this.gimb_up = new MissionPlanner.Controls.MyButton();
+            this.fs_state = new System.Windows.Forms.Label();
+            this.land_now = new MissionPlanner.Controls.MyButton();
+            this.fs_off = new MissionPlanner.Controls.MyButton();
+            this.fs_on = new MissionPlanner.Controls.MyButton();
             this.BUT_camon = new MissionPlanner.Controls.MyButton();
             this.BUT_camoff = new MissionPlanner.Controls.MyButton();
             this.modifyandSetLoiterRad = new MissionPlanner.Controls.ModifyandSet();
@@ -119,12 +125,6 @@
             this.tabPagemessages = new System.Windows.Forms.TabPage();
             this.txt_messagebox = new System.Windows.Forms.TextBox();
             this.tabActionsOT = new System.Windows.Forms.TabPage();
-            this.gimb_down = new MissionPlanner.Controls.MyButton();
-            this.gimb_up = new MissionPlanner.Controls.MyButton();
-            this.fs_state = new System.Windows.Forms.Label();
-            this.land_now = new MissionPlanner.Controls.MyButton();
-            this.fs_off = new MissionPlanner.Controls.MyButton();
-            this.fs_on = new MissionPlanner.Controls.MyButton();
             this.myButton4 = new MissionPlanner.Controls.MyButton();
             this.myButton5 = new MissionPlanner.Controls.MyButton();
             this.modifyandSet1 = new MissionPlanner.Controls.ModifyandSet();
@@ -149,6 +149,12 @@
             this.myButton18 = new MissionPlanner.Controls.MyButton();
             this.myButton19 = new MissionPlanner.Controls.MyButton();
             this.myButton20 = new MissionPlanner.Controls.MyButton();
+            this.tabGroundCtrl = new System.Windows.Forms.TabPage();
+            this.para_reset = new MissionPlanner.Controls.MyButton();
+            this.ign_off = new MissionPlanner.Controls.MyButton();
+            this.ign_on = new MissionPlanner.Controls.MyButton();
+            this.para_close = new MissionPlanner.Controls.MyButton();
+            this.para_open = new MissionPlanner.Controls.MyButton();
             this.tableMap = new System.Windows.Forms.TableLayoutPanel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.zg1 = new ZedGraph.ZedGraphControl();
@@ -192,12 +198,6 @@
             this.dataGridViewImageColumn2 = new System.Windows.Forms.DataGridViewImageColumn();
             this.Messagetabtimer = new System.Windows.Forms.Timer(this.components);
             this.bindingSourceStatusTab = new System.Windows.Forms.BindingSource(this.components);
-            this.tabGroundCtrl = new System.Windows.Forms.TabPage();
-            this.para_reset = new MissionPlanner.Controls.MyButton();
-            this.ign_off = new MissionPlanner.Controls.MyButton();
-            this.ign_on = new MissionPlanner.Controls.MyButton();
-            this.para_close = new MissionPlanner.Controls.MyButton();
-            this.para_open = new MissionPlanner.Controls.MyButton();
             ((System.ComponentModel.ISupportInitialize)(this.MainH)).BeginInit();
             this.MainH.Panel1.SuspendLayout();
             this.MainH.Panel2.SuspendLayout();
@@ -228,6 +228,7 @@
             this.tabScripts.SuspendLayout();
             this.tabPagemessages.SuspendLayout();
             this.tabActionsOT.SuspendLayout();
+            this.tabGroundCtrl.SuspendLayout();
             this.tableMap.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -239,7 +240,6 @@
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Zoomlevel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceStatusTab)).BeginInit();
-            this.tabGroundCtrl.SuspendLayout();
             this.SuspendLayout();
             // 
             // MainH
@@ -564,6 +564,13 @@
             // 
             // tabActions
             // 
+            resources.ApplyResources(this.tabActions, "tabActions");
+            this.tabActions.Controls.Add(this.gimb_down);
+            this.tabActions.Controls.Add(this.gimb_up);
+            this.tabActions.Controls.Add(this.fs_state);
+            this.tabActions.Controls.Add(this.land_now);
+            this.tabActions.Controls.Add(this.fs_off);
+            this.tabActions.Controls.Add(this.fs_on);
             this.tabActions.Controls.Add(this.BUT_camon);
             this.tabActions.Controls.Add(this.BUT_camoff);
             this.tabActions.Controls.Add(this.modifyandSetLoiterRad);
@@ -588,9 +595,52 @@
             this.tabActions.Controls.Add(this.BUT_RAWSensor);
             this.tabActions.Controls.Add(this.BUTrestartmission);
             this.tabActions.Controls.Add(this.BUTactiondo);
-            resources.ApplyResources(this.tabActions, "tabActions");
             this.tabActions.Name = "tabActions";
             this.tabActions.UseVisualStyleBackColor = true;
+            // 
+            // gimb_down
+            // 
+            resources.ApplyResources(this.gimb_down, "gimb_down");
+            this.gimb_down.Name = "gimb_down";
+            this.toolTip1.SetToolTip(this.gimb_down, resources.GetString("gimb_down.ToolTip"));
+            this.gimb_down.UseVisualStyleBackColor = true;
+            // 
+            // gimb_up
+            // 
+            resources.ApplyResources(this.gimb_up, "gimb_up");
+            this.gimb_up.Name = "gimb_up";
+            this.toolTip1.SetToolTip(this.gimb_up, resources.GetString("gimb_up.ToolTip"));
+            this.gimb_up.UseVisualStyleBackColor = true;
+            // 
+            // fs_state
+            // 
+            this.fs_state.BackColor = System.Drawing.Color.Gray;
+            resources.ApplyResources(this.fs_state, "fs_state");
+            this.fs_state.Name = "fs_state";
+            // 
+            // land_now
+            // 
+            resources.ApplyResources(this.land_now, "land_now");
+            this.land_now.Name = "land_now";
+            this.toolTip1.SetToolTip(this.land_now, resources.GetString("land_now.ToolTip"));
+            this.land_now.UseVisualStyleBackColor = true;
+            this.land_now.Click += new System.EventHandler(this.land_now_Click);
+            // 
+            // fs_off
+            // 
+            resources.ApplyResources(this.fs_off, "fs_off");
+            this.fs_off.Name = "fs_off";
+            this.toolTip1.SetToolTip(this.fs_off, resources.GetString("fs_off.ToolTip"));
+            this.fs_off.UseVisualStyleBackColor = true;
+            this.fs_off.Click += new System.EventHandler(this.fs_off_Click);
+            // 
+            // fs_on
+            // 
+            resources.ApplyResources(this.fs_on, "fs_on");
+            this.fs_on.Name = "fs_on";
+            this.toolTip1.SetToolTip(this.fs_on, resources.GetString("fs_on.ToolTip"));
+            this.fs_on.UseVisualStyleBackColor = true;
+            this.fs_on.Click += new System.EventHandler(this.fs_on_Click);
             // 
             // BUT_camon
             // 
@@ -1668,12 +1718,6 @@
             // tabActionsOT
             // 
             resources.ApplyResources(this.tabActionsOT, "tabActionsOT");
-            this.tabActionsOT.Controls.Add(this.gimb_down);
-            this.tabActionsOT.Controls.Add(this.gimb_up);
-            this.tabActionsOT.Controls.Add(this.fs_state);
-            this.tabActionsOT.Controls.Add(this.land_now);
-            this.tabActionsOT.Controls.Add(this.fs_off);
-            this.tabActionsOT.Controls.Add(this.fs_on);
             this.tabActionsOT.Controls.Add(this.myButton4);
             this.tabActionsOT.Controls.Add(this.myButton5);
             this.tabActionsOT.Controls.Add(this.modifyandSet1);
@@ -1700,52 +1744,6 @@
             this.tabActionsOT.Controls.Add(this.myButton20);
             this.tabActionsOT.Name = "tabActionsOT";
             this.tabActionsOT.UseVisualStyleBackColor = true;
-            // 
-            // gimb_down
-            // 
-            resources.ApplyResources(this.gimb_down, "gimb_down");
-            this.gimb_down.Name = "gimb_down";
-            this.toolTip1.SetToolTip(this.gimb_down, resources.GetString("gimb_down.ToolTip"));
-            this.gimb_down.UseVisualStyleBackColor = true;
-            this.gimb_down.Click += new System.EventHandler(this.gimb_down_Click);
-            // 
-            // gimb_up
-            // 
-            resources.ApplyResources(this.gimb_up, "gimb_up");
-            this.gimb_up.Name = "gimb_up";
-            this.toolTip1.SetToolTip(this.gimb_up, resources.GetString("gimb_up.ToolTip"));
-            this.gimb_up.UseVisualStyleBackColor = true;
-            this.gimb_up.Click += new System.EventHandler(this.gimb_up_Click);
-            // 
-            // fs_state
-            // 
-            this.fs_state.BackColor = System.Drawing.Color.Gray;
-            resources.ApplyResources(this.fs_state, "fs_state");
-            this.fs_state.Name = "fs_state";
-            // 
-            // land_now
-            // 
-            resources.ApplyResources(this.land_now, "land_now");
-            this.land_now.Name = "land_now";
-            this.toolTip1.SetToolTip(this.land_now, resources.GetString("land_now.ToolTip"));
-            this.land_now.UseVisualStyleBackColor = true;
-            this.land_now.Click += new System.EventHandler(this.land_now_Click);
-            // 
-            // fs_off
-            // 
-            resources.ApplyResources(this.fs_off, "fs_off");
-            this.fs_off.Name = "fs_off";
-            this.toolTip1.SetToolTip(this.fs_off, resources.GetString("fs_off.ToolTip"));
-            this.fs_off.UseVisualStyleBackColor = true;
-            this.fs_off.Click += new System.EventHandler(this.fs_off_Click);
-            // 
-            // fs_on
-            // 
-            resources.ApplyResources(this.fs_on, "fs_on");
-            this.fs_on.Name = "fs_on";
-            this.toolTip1.SetToolTip(this.fs_on, resources.GetString("fs_on.ToolTip"));
-            this.fs_on.UseVisualStyleBackColor = true;
-            this.fs_on.Click += new System.EventHandler(this.fs_on_Click);
             // 
             // myButton4
             // 
@@ -1958,6 +1956,55 @@
             this.myButton20.Name = "myButton20";
             this.toolTip1.SetToolTip(this.myButton20, resources.GetString("myButton20.ToolTip"));
             this.myButton20.UseVisualStyleBackColor = true;
+            // 
+            // tabGroundCtrl
+            // 
+            this.tabGroundCtrl.Controls.Add(this.para_reset);
+            this.tabGroundCtrl.Controls.Add(this.ign_off);
+            this.tabGroundCtrl.Controls.Add(this.ign_on);
+            this.tabGroundCtrl.Controls.Add(this.para_close);
+            this.tabGroundCtrl.Controls.Add(this.para_open);
+            resources.ApplyResources(this.tabGroundCtrl, "tabGroundCtrl");
+            this.tabGroundCtrl.Name = "tabGroundCtrl";
+            this.tabGroundCtrl.UseVisualStyleBackColor = true;
+            // 
+            // para_reset
+            // 
+            resources.ApplyResources(this.para_reset, "para_reset");
+            this.para_reset.Name = "para_reset";
+            this.toolTip1.SetToolTip(this.para_reset, resources.GetString("para_reset.ToolTip"));
+            this.para_reset.UseVisualStyleBackColor = true;
+            this.para_reset.Click += new System.EventHandler(this.para_reset_Click);
+            // 
+            // ign_off
+            // 
+            resources.ApplyResources(this.ign_off, "ign_off");
+            this.ign_off.Name = "ign_off";
+            this.ign_off.Click += new System.EventHandler(this.ign_off_Click);
+            // 
+            // ign_on
+            // 
+            resources.ApplyResources(this.ign_on, "ign_on");
+            this.ign_on.Name = "ign_on";
+            this.toolTip1.SetToolTip(this.ign_on, resources.GetString("ign_on.ToolTip"));
+            this.ign_on.UseVisualStyleBackColor = true;
+            this.ign_on.Click += new System.EventHandler(this.ign_on_Click);
+            // 
+            // para_close
+            // 
+            resources.ApplyResources(this.para_close, "para_close");
+            this.para_close.Name = "para_close";
+            this.toolTip1.SetToolTip(this.para_close, resources.GetString("para_close.ToolTip"));
+            this.para_close.UseVisualStyleBackColor = true;
+            this.para_close.Click += new System.EventHandler(this.para_close_Click);
+            // 
+            // para_open
+            // 
+            resources.ApplyResources(this.para_open, "para_open");
+            this.para_open.Name = "para_open";
+            this.toolTip1.SetToolTip(this.para_open, resources.GetString("para_open.ToolTip"));
+            this.para_open.UseVisualStyleBackColor = true;
+            this.para_open.Click += new System.EventHandler(this.para_open_Click);
             // 
             // tableMap
             // 
@@ -2335,55 +2382,6 @@
             // 
             this.bindingSourceStatusTab.DataSource = typeof(MissionPlanner.CurrentState);
             // 
-            // tabGroundCtrl
-            // 
-            this.tabGroundCtrl.Controls.Add(this.para_reset);
-            this.tabGroundCtrl.Controls.Add(this.ign_off);
-            this.tabGroundCtrl.Controls.Add(this.ign_on);
-            this.tabGroundCtrl.Controls.Add(this.para_close);
-            this.tabGroundCtrl.Controls.Add(this.para_open);
-            resources.ApplyResources(this.tabGroundCtrl, "tabGroundCtrl");
-            this.tabGroundCtrl.Name = "tabGroundCtrl";
-            this.tabGroundCtrl.UseVisualStyleBackColor = true;
-            // 
-            // para_reset
-            // 
-            resources.ApplyResources(this.para_reset, "para_reset");
-            this.para_reset.Name = "para_reset";
-            this.toolTip1.SetToolTip(this.para_reset, resources.GetString("para_reset.ToolTip"));
-            this.para_reset.UseVisualStyleBackColor = true;
-            this.para_reset.Click += new System.EventHandler(this.para_reset_Click);
-            // 
-            // ign_off
-            // 
-            resources.ApplyResources(this.ign_off, "ign_off");
-            this.ign_off.Name = "ign_off";
-            this.ign_off.Click += new System.EventHandler(this.ign_off_Click);
-            // 
-            // ign_on
-            // 
-            resources.ApplyResources(this.ign_on, "ign_on");
-            this.ign_on.Name = "ign_on";
-            this.toolTip1.SetToolTip(this.ign_on, resources.GetString("ign_on.ToolTip"));
-            this.ign_on.UseVisualStyleBackColor = true;
-            this.ign_on.Click += new System.EventHandler(this.ign_on_Click);
-            // 
-            // para_close
-            // 
-            resources.ApplyResources(this.para_close, "para_close");
-            this.para_close.Name = "para_close";
-            this.toolTip1.SetToolTip(this.para_close, resources.GetString("para_close.ToolTip"));
-            this.para_close.UseVisualStyleBackColor = true;
-            this.para_close.Click += new System.EventHandler(this.para_close_Click);
-            // 
-            // para_open
-            // 
-            resources.ApplyResources(this.para_open, "para_open");
-            this.para_open.Name = "para_open";
-            this.toolTip1.SetToolTip(this.para_open, resources.GetString("para_open.ToolTip"));
-            this.para_open.UseVisualStyleBackColor = true;
-            this.para_open.Click += new System.EventHandler(this.para_open_Click);
-            // 
             // FlightData
             // 
             resources.ApplyResources(this, "$this");
@@ -2429,6 +2427,7 @@
             this.tabPagemessages.ResumeLayout(false);
             this.tabPagemessages.PerformLayout();
             this.tabActionsOT.ResumeLayout(false);
+            this.tabGroundCtrl.ResumeLayout(false);
             this.tableMap.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -2442,7 +2441,6 @@
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Zoomlevel)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceStatusTab)).EndInit();
-            this.tabGroundCtrl.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -2602,12 +2600,6 @@
         private Controls.MyButton BUT_camon;
         private Controls.MyButton BUT_camoff;
         private System.Windows.Forms.TabPage tabActionsOT;
-        private Controls.MyButton gimb_down;
-        private Controls.MyButton gimb_up;
-        private System.Windows.Forms.Label fs_state;
-        private Controls.MyButton land_now;
-        private Controls.MyButton fs_off;
-        private Controls.MyButton fs_on;
         private Controls.MyButton myButton4;
         private Controls.MyButton myButton5;
         private Controls.ModifyandSet modifyandSet1;
@@ -2638,5 +2630,11 @@
         private Controls.MyButton ign_on;
         private Controls.MyButton para_close;
         private Controls.MyButton para_open;
+        private Controls.MyButton gimb_down;
+        private Controls.MyButton gimb_up;
+        private System.Windows.Forms.Label fs_state;
+        private Controls.MyButton land_now;
+        private Controls.MyButton fs_off;
+        private Controls.MyButton fs_on;
     }
 }

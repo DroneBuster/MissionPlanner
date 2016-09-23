@@ -4424,6 +4424,5 @@ namespace MissionPlanner.GCSViews
             catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
             ((Button)sender).Enabled = true;
         }
-
     }
 }

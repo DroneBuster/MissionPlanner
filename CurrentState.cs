@@ -959,6 +959,24 @@ namespace MissionPlanner
         public ushort rcoverridech7 { get; set; }
         public ushort rcoverridech8 { get; set; }
 
+        // Gas sensors
+        [DisplayText("Air humidity")]
+        public float humidity { get; set; }
+        [DisplayText("Sensor tempeture")]
+        public float temp { get; set; }
+        [DisplayText("Air pressure")]
+        public float press { get; set; }
+        [DisplayText("CO gas consentration")]
+        public float co_gas { get; set; }
+        [DisplayText("NO2 gas consentration")]
+        public float no2_gas { get; set; }
+        [DisplayText("NH3 gas consentration")]
+        public float nh3_gas { get; set; }
+        [DisplayText("NO gas consentration")]
+        public float no_gas { get; set; }
+        [DisplayText("SO2 gas consentration")]
+        public float so2_gas { get; set; }
+
         public bool connected
         {
             get { return (MainV2.comPort.BaseStream.IsOpen || MainV2.comPort.logreadmode); }
@@ -1793,6 +1811,20 @@ namespace MissionPlanner
                     {
                         var par_status = mavLinkMessage.ToStructure<MAVLink.mavlink_ot_parachute_status_t>();
                         ot_fs_status = par_status.fs_status; 
+                    }
+
+                    mavLinkMessage = MAV.getPacket((uint)MAVLink.MAVLINK_MSG_ID.GAS_SENSOR_BOARD);
+                    if (mavLinkMessage != null)
+                    {
+                        var gas_sensors = mavLinkMessage.ToStructure<MAVLink.mavlink_gas_sensor_board_t>();
+                        temp = gas_sensors.temp;
+                        humidity = gas_sensors.humidity;
+                        press = gas_sensors.press;
+                        co_gas = gas_sensors.co_gas;
+                        no2_gas = gas_sensors.no2_gas;
+                        nh3_gas = gas_sensors.nh3_gas;
+                        no_gas = gas_sensors.no_gas;
+                        so2_gas = gas_sensors.so2_gas;
                     }
 
                     mavLinkMessage = MAV.getPacket((uint) MAVLink.MAVLINK_MSG_ID.RC_CHANNELS_RAW);

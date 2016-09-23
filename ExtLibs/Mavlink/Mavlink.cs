@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 public partial class MAVLink
 {
-    public const string MAVLINK_BUILD_DATE = "Fri May 20 2016";
+    public const string MAVLINK_BUILD_DATE = "Fri Sep 16 2016";
     public const string MAVLINK_WIRE_PROTOCOL_VERSION = "2.0";
     public const int MAVLINK_MAX_PAYLOAD_LEN = 255;
 
@@ -200,6 +200,7 @@ public partial class MAVLink
 		new message_info(219, "GOPRO_SET_RESPONSE", 162, 2, typeof( mavlink_gopro_set_response_t )),
 		new message_info(226, "RPM", 207, 8, typeof( mavlink_rpm_t )),
 		new message_info(227, "OT_PARACHUTE_STATUS", 9, 4, typeof( mavlink_ot_parachute_status_t )),
+		new message_info(228, "GAS_SENSOR_BOARD", 75, 32, typeof( mavlink_gas_sensor_board_t )),
 		new message_info(241, "VIBRATION", 90, 32, typeof( mavlink_vibration_t )),
 		new message_info(242, "HOME_POSITION", 104, 52, typeof( mavlink_home_position_t )),
 		new message_info(243, "SET_HOME_POSITION", 85, 53, typeof( mavlink_set_home_position_t )),
@@ -472,6 +473,7 @@ GOPRO_SET_REQUEST = 218,
 GOPRO_SET_RESPONSE = 219,
 RPM = 226,
 OT_PARACHUTE_STATUS = 227,
+GAS_SENSOR_BOARD = 228,
 VIBRATION = 241,
 HOME_POSITION = 242,
 SET_HOME_POSITION = 243,
@@ -3311,6 +3313,29 @@ SETUP_SIGNING = 256,
         public  byte ignition_status;
             /// <summary> Gimbal position </summary>
         public  byte gimbal_position;
+    
+    };
+
+
+    [StructLayout(LayoutKind.Sequential,Pack=1,Size=32)]
+    public struct mavlink_gas_sensor_board_t
+    {
+        /// <summary> Air humidity </summary>
+        public  Single humidity;
+            /// <summary> Sensor tempeture </summary>
+        public  Single temp;
+            /// <summary> Air pressure </summary>
+        public  Single press;
+            /// <summary> NH3 consentration </summary>
+        public  Single nh3_gas;
+            /// <summary> NO2 consentration </summary>
+        public  Single no2_gas;
+            /// <summary> CO consentartion </summary>
+        public  Single co_gas;
+            /// <summary> NO consentration </summary>
+        public  Single no_gas;
+            /// <summary> SO2 consentration </summary>
+        public  Single so2_gas;
     
     };
 
