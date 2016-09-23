@@ -69,45 +69,86 @@ namespace MissionPlanner.GCSViews.ConfigurationView
             but.Size = new Size(75, 37);
             but.Click += but_StopAll;
             Controls.Add(but);
+
+            y += 39;
+
+            but = new MyButton();
+            but.Text = "Test all in Sequence";
+            but.Location = new Point(x, y);
+            but.Size = new Size(75, 37);
+            but.Click += but_TestAllSeq;
+            Controls.Add(but);
         }
 
         private int get_motormax()
         {
             var motormax = 8;
 
-            if (!MainV2.comPort.MAV.param.ContainsKey("FRAME"))
+            var enable = MainV2.comPort.MAV.param.ContainsKey("FRAME") || MainV2.comPort.MAV.param.ContainsKey("Q_FRAME_TYPE");
+
+            if (!enable)
             {
                 Enabled = false;
                 return motormax;
             }
 
+            MAVLink.MAV_TYPE type = MAVLink.MAV_TYPE.QUADROTOR;
+            int frame_type = 0; // + frame
+
+            if (MainV2.comPort.MAV.param.ContainsKey("Q_FRAME_CLASS"))
+            {
+                var value = (int)MainV2.comPort.MAV.param["Q_FRAME_CLASS"].Value;
+                switch (value)
+                {
+                    case 0:
+                        type = MAVLink.MAV_TYPE.QUADROTOR;
+                        break;
+                    case 1:
+                        type = MAVLink.MAV_TYPE.HEXAROTOR;
+                        break;
+                    case 2:
+                        type = MAVLink.MAV_TYPE.OCTOROTOR;
+                        break;
+                    case 3:
+                        type = MAVLink.MAV_TYPE.OCTOROTOR;
+                        break;
+                }
+
+                frame_type = (int)MainV2.comPort.MAV.param["Q_FRAME_TYPE"].Value;
+            }
+            else
+            {
+                type = MainV2.comPort.MAV.aptype;
+                frame_type = (int)MainV2.comPort.MAV.param["FRAME"].Value;
+            }
+
             var motors = new Motor[0];
 
-            if (MainV2.comPort.MAV.aptype == MAVLink.MAV_TYPE.TRICOPTER)
+            if (type == MAVLink.MAV_TYPE.TRICOPTER)
             {
                 motormax = 4;
 
-                motors = Motor.build_motors(MAVLink.MAV_TYPE.TRICOPTER, (int) (double) MainV2.comPort.MAV.param["FRAME"]);
+                motors = Motor.build_motors(MAVLink.MAV_TYPE.TRICOPTER, frame_type);
             }
-            else if (MainV2.comPort.MAV.aptype == MAVLink.MAV_TYPE.QUADROTOR)
+            else if (type == MAVLink.MAV_TYPE.QUADROTOR)
             {
                 motormax = 4;
 
-                motors = Motor.build_motors(MAVLink.MAV_TYPE.QUADROTOR, (int) (double) MainV2.comPort.MAV.param["FRAME"]);
+                motors = Motor.build_motors(MAVLink.MAV_TYPE.QUADROTOR, frame_type);
             }
-            else if (MainV2.comPort.MAV.aptype == MAVLink.MAV_TYPE.HEXAROTOR)
+            else if (type == MAVLink.MAV_TYPE.HEXAROTOR)
             {
                 motormax = 6;
 
-                motors = Motor.build_motors(MAVLink.MAV_TYPE.HEXAROTOR, (int) (double) MainV2.comPort.MAV.param["FRAME"]);
+                motors = Motor.build_motors(MAVLink.MAV_TYPE.HEXAROTOR, frame_type);
             }
-            else if (MainV2.comPort.MAV.aptype == MAVLink.MAV_TYPE.OCTOROTOR)
+            else if (type == MAVLink.MAV_TYPE.OCTOROTOR)
             {
                 motormax = 8;
 
-                motors = Motor.build_motors(MAVLink.MAV_TYPE.OCTOROTOR, (int) (double) MainV2.comPort.MAV.param["FRAME"]);
+                motors = Motor.build_motors(MAVLink.MAV_TYPE.OCTOROTOR, frame_type);
             }
-            else if (MainV2.comPort.MAV.aptype == MAVLink.MAV_TYPE.HELICOPTER)
+            else if (type == MAVLink.MAV_TYPE.HELICOPTER)
             {
                 motormax = 0;
             }
@@ -125,6 +166,15 @@ namespace MissionPlanner.GCSViews.ConfigurationView
             {
                 testMotor(i, speed, time);
             }
+        }
+
+        private void but_TestAllSeq(object sender, EventArgs e)
+        {
+            int motormax = this.get_motormax();
+            int speed = (int) NUM_thr_percent.Value;
+            int time = (int) NUM_duration.Value;
+
+            testMotor(1, speed, time, motormax);
         }
 
         private void but_StopAll(object sender, EventArgs e)
@@ -151,13 +201,13 @@ namespace MissionPlanner.GCSViews.ConfigurationView
             }
         }
 
-        private void testMotor(int motor, int speed, int time)
+        private void testMotor(int motor, int speed, int time,int motorcount = 0)
         {
             try
             {
                 if (
                     !MainV2.comPort.doMotorTest(motor, MAVLink.MOTOR_TEST_THROTTLE_TYPE.MOTOR_TEST_THROTTLE_PERCENT,
-                        speed, time))
+                        speed, time, motorcount))
                 {
                     CustomMessageBox.Show("Command was denied by the autopilot");
                 }

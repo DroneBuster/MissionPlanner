@@ -12,6 +12,7 @@ using System.Linq;
 using MissionPlanner.Utilities;
 using MissionPlanner;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace MissionPlanner
@@ -22,14 +23,19 @@ namespace MissionPlanner
 
         public static DateTime starttime = DateTime.Now;
 
-        public static bool vvvvz = false;
+        public static string name { get; internal set; }
+
         public static Image Logo = null;
+        public static Image IconFile = null;
 
         public static Splash Splash;
 
         internal static Thread Thread;
 
         public static string[] args = new string[] {};
+        public static Bitmap SplashBG = null;
+
+        public static string[] names = new string[] { "VVVVZ" };
 
         /// <summary>
         /// The main entry point for the application.
@@ -67,6 +73,52 @@ namespace MissionPlanner
                 return;
             }
 
+            name = "Mission Planner";
+
+            try
+            {
+                if (File.Exists(Settings.GetRunningDirectory() + "logo.txt"))
+                    name = File.ReadAllLines(Settings.GetRunningDirectory() + "logo.txt",
+                        Encoding.UTF8)[0];
+            }
+            catch
+            {
+            }
+
+            if (File.Exists(Settings.GetRunningDirectory() + "logo.png"))
+                Logo = new Bitmap(Settings.GetRunningDirectory() + "logo.png");
+
+            if (File.Exists(Settings.GetRunningDirectory() + "icon.png"))
+            {
+                // 128*128
+                IconFile = new Bitmap(Settings.GetRunningDirectory() + "icon.png");
+            }
+            else
+            {
+                IconFile = MissionPlanner.Properties.Resources.mpdesktop.ToBitmap();
+            }
+
+            if (File.Exists(Settings.GetRunningDirectory() + "splashbg.png")) // 600*375
+                SplashBG = new Bitmap(Settings.GetRunningDirectory() + "splashbg.png");
+
+
+            Splash = new MissionPlanner.Splash();
+            if (SplashBG != null)
+            {
+                Splash.BackgroundImage = SplashBG;
+                Splash.pictureBox1.Visible = false;
+            }
+
+            if (IconFile != null)
+                Splash.Icon = Icon.FromHandle(((Bitmap)IconFile).GetHicon());
+
+            string strVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            Splash.Text = name + " " + Application.ProductVersion + " build " + strVersion;
+            Splash.Show();
+
+            Application.DoEvents();
+            Application.DoEvents();
+
             // setup theme provider
             CustomMessageBox.ApplyTheme += MissionPlanner.Utilities.ThemeManager.ApplyThemeTo;
             Controls.MainSwitcher.ApplyTheme += MissionPlanner.Utilities.ThemeManager.ApplyThemeTo;
@@ -93,18 +145,8 @@ namespace MissionPlanner
             WebRequest.DefaultWebProxy = WebRequest.GetSystemWebProxy();
             WebRequest.DefaultWebProxy.Credentials = CredentialCache.DefaultNetworkCredentials;
 
-            string name = "Mission Planner";
-
-            if (File.Exists(Application.StartupPath + Path.DirectorySeparatorChar + "logo.txt"))
-                name = File.ReadAllText(Application.StartupPath + Path.DirectorySeparatorChar + "logo.txt",
-                    Encoding.UTF8);
-
-            if (File.Exists(Application.StartupPath + Path.DirectorySeparatorChar + "logo.png"))
-                Logo = new Bitmap(Application.StartupPath + Path.DirectorySeparatorChar + "logo.png");
-
             if (name == "VVVVZ")
             {
-                vvvvz = true;
                 // set pw
                 Settings.Instance["password"] = "viDQSk/lmA2qEE8GA7SIHqu0RG2hpkH973MPpYO87CI=";
                 Settings.Instance["password_protect"] = "True";
@@ -116,15 +158,8 @@ namespace MissionPlanner
 
             CleanupFiles();
 
-            Utilities.NGEN.doNGEN();
-
-            Splash = new MissionPlanner.Splash();
-            string strVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            Splash.Text = name + " " + Application.ProductVersion + " build " + strVersion;
-            Splash.Show();
-
-            Application.DoEvents();
-            Application.DoEvents();
+            log.InfoFormat("64bit os {0}, 64bit process {1}", System.Environment.Is64BitOperatingSystem,
+                System.Environment.Is64BitProcess);
 
             try
             {
@@ -154,18 +189,54 @@ namespace MissionPlanner
 
         static void CleanupFiles()
         {
-            //cleanup bad file
-            string file = Application.StartupPath + Path.DirectorySeparatorChar +
-                          @"LogAnalyzer\tests\TestUnderpowered.py";
-            if (File.Exists(file))
+            try
             {
-                File.Delete(file);
+                //cleanup bad file
+                string file = Settings.GetRunningDirectory() +
+                              @"LogAnalyzer\tests\TestUnderpowered.py";
+                if (File.Exists(file))
+                {
+                    File.Delete(file);
+                }
+            }
+            catch { }
+
+            try
+            {
+                var file = "NumpyDotNet.dll";
+                if (File.Exists(file))
+                {
+                    File.Delete(file);
+                }
+            }
+            catch
+            {
+                
+            }
+            try
+            {
+                foreach (string newupdater in Directory.GetFiles(Settings.GetRunningDirectory(), "Updater.exe*.new"))
+                {
+                    File.Copy(newupdater, newupdater.Remove(newupdater.Length - 4), true);
+                    File.Delete(newupdater);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Exception during update", ex);
             }
 
-            file = "NumpyDotNet.dll";
-            if (File.Exists(file))
+            try
             {
-                File.Delete(file);
+                foreach (string newupdater in Directory.GetFiles(Settings.GetRunningDirectory(), "tlogThumbnailHandler.dll.new"))
+                {
+                    File.Copy(newupdater, newupdater.Remove(newupdater.Length - 4), true);
+                    File.Delete(newupdater);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Exception during update", ex);
             }
         }
 

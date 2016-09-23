@@ -37,6 +37,7 @@ using Feature = SharpKml.Dom.Feature;
 using ILog = log4net.ILog;
 using Placemark = SharpKml.Dom.Placemark;
 using Point = System.Drawing.Point;
+using System.Text.RegularExpressions;
 
 namespace MissionPlanner.GCSViews
 {
@@ -80,7 +81,7 @@ namespace MissionPlanner.GCSViews
 
         private void poieditToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (CurrentPOIMarker == null)
+            if (CurrentGMapMarker == null || !(CurrentGMapMarker is GMapMarkerPOI))
                 return;
 
             POI.POIEdit(CurrentPOIMarker);
@@ -160,8 +161,17 @@ namespace MissionPlanner.GCSViews
                 return;
             }
 
-            // add history
-            history.Add(GetCommandList());
+            try
+            {
+                // get current command list
+                var currentlist = GetCommandList();
+                // add history
+                history.Add(currentlist);
+            }
+            catch (Exception ex)
+            {
+                CustomMessageBox.Show("A invalid entry has been detected\n" + ex.Message, Strings.ERROR);
+            }
 
             // remove more than 20 revisions
             if (history.Count > 20)
@@ -292,6 +302,9 @@ namespace MissionPlanner.GCSViews
                 }
             }
 
+            // convert to utm
+            convertFromGeographic(lat, lng);
+
             // Add more for other params
             if (Commands.Columns[Param1.Index].HeaderText.Equals(cmdParamNames["WAYPOINT"][1] /*"Delay"*/))
             {
@@ -302,6 +315,89 @@ namespace MissionPlanner.GCSViews
 
             writeKML();
             Commands.EndEdit();
+        }
+
+        private void convertFromGeographic(double lat, double lng)
+        {
+            if (lat == 0 && lng == 0)
+            {
+                return;
+            }
+
+            // always update other systems, incase user switchs while planning
+            try
+            {
+                //UTM
+                var temp = new PointLatLngAlt(lat, lng);
+                int zone = temp.GetUTMZone();
+                var temp2 = temp.ToUTM();
+                Commands[coordZone.Index, selectedrow].Value = zone;
+                Commands[coordEasting.Index, selectedrow].Value = temp2[0].ToString("0.000");
+                Commands[coordNorthing.Index, selectedrow].Value = temp2[1].ToString("0.000");
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
+            try
+            {
+                //MGRS
+                Commands[MGRS.Index, selectedrow].Value = ((MGRS) new Geographic(lng, lat)).ToString();
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
+        }
+
+        void convertFromUTM(int rowindex)
+        {
+            try
+            {
+                var zone = int.Parse(Commands[coordZone.Index, rowindex].Value.ToString());
+
+                var east = double.Parse(Commands[coordEasting.Index, rowindex].Value.ToString());
+
+                var north = double.Parse(Commands[coordNorthing.Index, rowindex].Value.ToString());
+
+                if (east == 0 && north == 0)
+                {
+                    return;
+                }
+
+                var utm = new utmpos(east, north, zone);
+
+                Commands[Lat.Index, rowindex].Value = utm.ToLLA().Lat;
+                Commands[Lon.Index, rowindex].Value = utm.ToLLA().Lng;
+
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        void convertFromMGRS(int rowindex)
+        {
+            try
+            {
+                var mgrs = Commands[MGRS.Index, rowindex].Value.ToString();
+
+                MGRS temp = new MGRS(mgrs);
+
+                var convert = temp.ConvertTo<Geographic>();
+
+                if (convert.Latitude == 0 || convert.Longitude == 0)
+                    return;
+
+                Commands[Lat.Index, rowindex].Value = convert.Latitude.ToString();
+                Commands[Lon.Index, rowindex].Value = convert.Longitude.ToString();
+
+            }
+            catch
+            {
+                return;
+            }
         }
 
         PointLatLngAlt mouseposdisplay = new PointLatLngAlt(0, 0);
@@ -320,7 +416,9 @@ namespace MissionPlanner.GCSViews
 
             coords1.Lat = mouseposdisplay.Lat;
             coords1.Lng = mouseposdisplay.Lng;
-            coords1.Alt = srtm.getAltitude(mouseposdisplay.Lat, mouseposdisplay.Lng, MainMap.Zoom).alt;
+            var altdata = srtm.getAltitude(mouseposdisplay.Lat, mouseposdisplay.Lng, MainMap.Zoom);
+            coords1.Alt = altdata.alt;
+            coords1.AltSource = altdata.altsource;
 
             try
             {
@@ -433,9 +531,8 @@ namespace MissionPlanner.GCSViews
             InitializeComponent();
 
             // config map             
-            MainMap.CacheLocation = Path.GetDirectoryName(Application.ExecutablePath) + Path.DirectorySeparatorChar +
+            MainMap.CacheLocation = Settings.GetDataDirectory() +
                                     "gmapcache" + Path.DirectorySeparatorChar;
-            MainMap.MapProvider = GoogleSatelliteMapProvider.Instance;
 
             // map events
             MainMap.OnPositionChanged += MainMap_OnCurrentPositionChanged;
@@ -525,6 +622,34 @@ namespace MissionPlanner.GCSViews
 
             RegeneratePolygon();
 
+            updateCMDParams();
+
+            Up.Image = Resources.up;
+            Down.Image = Resources.down;
+
+            updateMapType(null, null);
+
+            // hide the map to prevent redraws when its loaded
+            panelMap.Visible = false;
+
+            /*
+            var timer = new System.Timers.Timer();
+
+            // 2 second
+            timer.Interval = 2000;
+            timer.Elapsed += updateMapType;
+
+            timer.Start();
+            */
+        }
+
+        void updateMapType(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            log.Info("updateMapType invoke req? " + comboBoxMapType.InvokeRequired);
+
+            if (sender is System.Timers.Timer)
+                ((System.Timers.Timer)sender).Stop();
+
             string mapType = Settings.Instance["MapType"];
             if (!string.IsNullOrEmpty(mapType))
             {
@@ -539,14 +664,41 @@ namespace MissionPlanner.GCSViews
                 {
                 }
             }
+            else
+            {
+                if (L10N.ConfigLang.IsChildOf(CultureInfo.GetCultureInfo("zh-Hans")))
+                {
+                    CustomMessageBox.Show(
+                        "亲爱的中国用户，为保证地图使用正常，已为您将默认地图自动切换到具有中国特色的【谷歌中国卫星地图】！\r\n与默认【谷歌卫星地图】的区别：使用.cn服务器，加入火星坐标修正\r\n如果您所在的地区仍然无法使用，天书同时推荐必应或高德地图，其它地图由于没有加入坐标修正功能，为确保飞行安全，请谨慎选择",
+                        "默认地图已被切换");
 
-            updateCMDParams();
+                    try
+                    {
+                        var index = GMapProviders.List.FindIndex(x => (x.Name == "谷歌中国卫星地图"));
 
-            Up.Image = Resources.up;
-            Down.Image = Resources.down;
+                        if (index != -1)
+                            comboBoxMapType.SelectedIndex = index;
+                    }
+                    catch
+                    {
+                    }
+                }
+                else
+                {
+                    mapType = "GoogleSatelliteMap";
+                    // set default
+                    try
+                    {
+                        var index = GMapProviders.List.FindIndex(x => (x.Name == mapType));
 
-            // hide the map to prevent redraws when its loaded
-            panelMap.Visible = false;
+                        if (index != -1)
+                            comboBoxMapType.SelectedIndex = index;
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
         }
 
         void updateCMDParams()
@@ -571,7 +723,7 @@ namespace MissionPlanner.GCSViews
 
             // do lang stuff here
 
-            string file = Path.GetDirectoryName(Application.ExecutablePath) + Path.DirectorySeparatorChar + "mavcmd.xml";
+            string file = Settings.GetRunningDirectory() + "mavcmd.xml";
 
             if (!File.Exists(file))
             {
@@ -970,7 +1122,7 @@ namespace MissionPlanner.GCSViews
         /// <param name="lng"></param>
         /// <param name="lat"></param>
         /// <param name="alt"></param>
-        private void addpolygonmarker(string tag, double lng, double lat, int alt, Color? color)
+        private void addpolygonmarker(string tag, double lng, double lat, double alt, Color? color)
         {
             try
             {
@@ -1093,7 +1245,7 @@ namespace MissionPlanner.GCSViews
                     if (objectsoverlay != null) // during startup
                     {
                         pointlist.Add(new PointLatLngAlt(double.Parse(TXT_homelat.Text), double.Parse(TXT_homelng.Text),
-                            (int) double.Parse(TXT_homealt.Text), "H"));
+                            double.Parse(TXT_homealt.Text), "H"));
                         fullpointlist.Add(pointlist[pointlist.Count - 1]);
                         addpolygonmarker("H", double.Parse(TXT_homelng.Text), double.Parse(TXT_homelat.Text), 0, null);
                     }
@@ -1146,7 +1298,8 @@ namespace MissionPlanner.GCSViews
                                     Enum.Parse(typeof (MAVLink.MAV_CMD),
                                         Commands.Rows[a].Cells[Command.Index].Value.ToString(), false);
                         if (command < (byte) MAVLink.MAV_CMD.LAST &&
-                            command != (byte) MAVLink.MAV_CMD.TAKEOFF &&
+                            command != (byte) MAVLink.MAV_CMD.TAKEOFF && // doesnt have a position
+                            command != (byte)MAVLink.MAV_CMD.VTOL_TAKEOFF && // doesnt have a position
                             command != (byte) MAVLink.MAV_CMD.RETURN_TO_LAUNCH &&
                             command != (byte) MAVLink.MAV_CMD.CONTINUE_AND_CHANGE_ALT &&
                             command != (byte) MAVLink.MAV_CMD.GUIDED_ENABLE
@@ -1166,7 +1319,7 @@ namespace MissionPlanner.GCSViews
                             if (command == (byte) MAVLink.MAV_CMD.DO_SET_ROI)
                             {
                                 pointlist.Add(new PointLatLngAlt(double.Parse(cell3), double.Parse(cell4),
-                                    (int) double.Parse(cell2) + homealt, "ROI" + (a + 1)) {color = Color.Red});
+                                    double.Parse(cell2) + homealt, "ROI" + (a + 1)) {color = Color.Red});
                                 // do set roi is not a nav command. so we dont route through it
                                 //fullpointlist.Add(pointlist[pointlist.Count - 1]);
                                 GMarkerGoogle m =
@@ -1195,29 +1348,29 @@ namespace MissionPlanner.GCSViews
                                      command == (byte) MAVLink.MAV_CMD.LOITER_UNLIM)
                             {
                                 pointlist.Add(new PointLatLngAlt(double.Parse(cell3), double.Parse(cell4),
-                                    (int) double.Parse(cell2) + homealt, (a + 1).ToString())
+                                    double.Parse(cell2) + homealt, (a + 1).ToString())
                                 {
                                     color = Color.LightBlue
                                 });
                                 fullpointlist.Add(pointlist[pointlist.Count - 1]);
                                 addpolygonmarker((a + 1).ToString(), double.Parse(cell4), double.Parse(cell3),
-                                    (int) double.Parse(cell2), Color.LightBlue);
+                                    double.Parse(cell2), Color.LightBlue);
                             }
                             else if (command == (byte) MAVLink.MAV_CMD.SPLINE_WAYPOINT)
                             {
                                 pointlist.Add(new PointLatLngAlt(double.Parse(cell3), double.Parse(cell4),
-                                    (int) double.Parse(cell2) + homealt, (a + 1).ToString()) {Tag2 = "spline"});
+                                    double.Parse(cell2) + homealt, (a + 1).ToString()) {Tag2 = "spline"});
                                 fullpointlist.Add(pointlist[pointlist.Count - 1]);
                                 addpolygonmarker((a + 1).ToString(), double.Parse(cell4), double.Parse(cell3),
-                                    (int) double.Parse(cell2), Color.Green);
+                                    double.Parse(cell2), Color.Green);
                             }
                             else
                             {
                                 pointlist.Add(new PointLatLngAlt(double.Parse(cell3), double.Parse(cell4),
-                                    (int) double.Parse(cell2) + homealt, (a + 1).ToString()));
+                                    double.Parse(cell2) + homealt, (a + 1).ToString()));
                                 fullpointlist.Add(pointlist[pointlist.Count - 1]);
                                 addpolygonmarker((a + 1).ToString(), double.Parse(cell4), double.Parse(cell3),
-                                    (int) double.Parse(cell2), null);
+                                    double.Parse(cell2), null);
                             }
 
                             avglong += double.Parse(Commands.Rows[a].Cells[Lon.Index].Value.ToString());
@@ -1609,7 +1762,7 @@ namespace MissionPlanner.GCSViews
         {
             using (SaveFileDialog fd = new SaveFileDialog())
             {
-                fd.Filter = "Ardupilot Mission|*.waypoints;*.txt";
+                fd.Filter = "Mission|*.waypoints;*.txt|Mission JSON|*.mission";
                 fd.DefaultExt = ".waypoints";
                 fd.FileName = wpfilename;
                 DialogResult result = fd.ShowDialog();
@@ -1618,6 +1771,27 @@ namespace MissionPlanner.GCSViews
                 {
                     try
                     {
+                        if (file.EndsWith(".mission"))
+                        {
+                            var list = GetCommandList();
+                            Locationwp home = new Locationwp();
+                            try
+                            {
+                                home.id = (ushort)MAVLink.MAV_CMD.WAYPOINT;
+                                home.lat = (double.Parse(TXT_homelat.Text));
+                                home.lng = (double.Parse(TXT_homelng.Text));
+                                home.alt = (float.Parse(TXT_homealt.Text) / CurrentState.multiplierdist); // use saved home
+                            }
+                            catch { }
+
+                            list.Insert(0, home);
+
+                            var format = MissionFile.ConvertFromLocationwps(list, (byte)(altmode)CMB_altmode.SelectedValue);
+
+                            MissionFile.WriteFile(file, format);
+                            return;
+                        }
+
                         StreamWriter sw = new StreamWriter(file);
                         sw.WriteLine("QGC WPL 110");
                         try
@@ -1636,8 +1810,8 @@ namespace MissionPlanner.GCSViews
                         }
                         for (int a = 0; a < Commands.Rows.Count - 0; a++)
                         {
-                            byte mode =
-                                (byte)
+                            ushort mode =
+                                (ushort)
                                     (MAVLink.MAV_CMD)
                                         Enum.Parse(typeof (MAVLink.MAV_CMD), Commands.Rows[a].Cells[0].Value.ToString());
 
@@ -1753,10 +1927,10 @@ namespace MissionPlanner.GCSViews
                     {
                         cmds.Add(port.getHomePosition());
                     }
-                    catch (TimeoutException ex)
+                    catch (TimeoutException)
                     {
                         // blank home
-                        cmds.Add(new Locationwp() { id = (byte)MAVLink.MAV_CMD.WAYPOINT });
+                        cmds.Add(new Locationwp() { id = (ushort)MAVLink.MAV_CMD.WAYPOINT });
                     }
                 }
 
@@ -1913,12 +2087,12 @@ namespace MissionPlanner.GCSViews
                 Locationwp temp = new Locationwp();
                 if (Commands.Rows[a].Cells[Command.Index].Value.ToString().Contains("UNKNOWN"))
                 {
-                    temp.id = (byte) Commands.Rows[a].Cells[Command.Index].Tag;
+                    temp.id = (ushort)Commands.Rows[a].Cells[Command.Index].Tag;
                 }
                 else
                 {
                     temp.id =
-                        (byte)
+                        (ushort) 
                             (int)
                                 Enum.Parse(typeof (MAVLink.MAV_CMD),
                                     Commands.Rows[a].Cells[Command.Index].Value.ToString(),
@@ -1935,6 +2109,8 @@ namespace MissionPlanner.GCSViews
                 temp.p2 = (float) (double.Parse(Commands.Rows[a].Cells[Param2.Index].Value.ToString()));
                 temp.p3 = (float) (double.Parse(Commands.Rows[a].Cells[Param3.Index].Value.ToString()));
                 temp.p4 = (float) (double.Parse(Commands.Rows[a].Cells[Param4.Index].Value.ToString()));
+
+                temp.Tag = Commands.Rows[a].Cells[TagData.Index].Value;
 
                 return temp;
             }
@@ -1976,7 +2152,7 @@ namespace MissionPlanner.GCSViews
                 Locationwp home = new Locationwp();
                 try
                 {
-                    home.id = (byte) MAVLink.MAV_CMD.WAYPOINT;
+                    home.id = (ushort)MAVLink.MAV_CMD.WAYPOINT;
                     home.lat = (double.Parse(TXT_homelat.Text));
                     home.lng = (double.Parse(TXT_homelng.Text));
                     home.alt = (float.Parse(TXT_homealt.Text)/CurrentState.multiplierdist); // use saved home
@@ -2056,12 +2232,15 @@ namespace MissionPlanner.GCSViews
                         var homeans = port.setWP(home, (ushort)a, MAVLink.MAV_FRAME.GLOBAL, 0, 1, use_int);
                         if (homeans != MAVLink.MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED)
                         {
-                            CustomMessageBox.Show(Strings.ErrorRejectedByMAV, Strings.ERROR);
-                            return;
+                            if (homeans != MAVLink.MAV_MISSION_RESULT.MAV_MISSION_INVALID_SEQUENCE)
+                            {
+                                CustomMessageBox.Show(Strings.ErrorRejectedByMAV, Strings.ERROR);
+                                return;
+                            }
                         }
                         a++;
                     }
-                    catch (TimeoutException ex)
+                    catch (TimeoutException)
                     {
                         use_int = false;
                         // added here to prevent timeout errors
@@ -2069,8 +2248,11 @@ namespace MissionPlanner.GCSViews
                         var homeans = port.setWP(home, (ushort)a, MAVLink.MAV_FRAME.GLOBAL, 0, 1, use_int);
                         if (homeans != MAVLink.MAV_MISSION_RESULT.MAV_MISSION_ACCEPTED)
                         {
-                            CustomMessageBox.Show(Strings.ErrorRejectedByMAV, Strings.ERROR);
-                            return;
+                            if (homeans != MAVLink.MAV_MISSION_RESULT.MAV_MISSION_INVALID_SEQUENCE)
+                            {
+                                CustomMessageBox.Show(Strings.ErrorRejectedByMAV, Strings.ERROR);
+                                return;
+                            }
                         }
                         a++;
                     }
@@ -2095,7 +2277,7 @@ namespace MissionPlanner.GCSViews
                         "Setting WP " + a);
 
                     // make sure we are using the correct frame for these commands
-                    if (temp.id < (byte) MAVLink.MAV_CMD.LAST || temp.id == (byte) MAVLink.MAV_CMD.DO_SET_HOME)
+                    if (temp.id < (ushort)MAVLink.MAV_CMD.LAST || temp.id == (ushort)MAVLink.MAV_CMD.DO_SET_HOME)
                     {
                         var mode = currentaltmode;
 
@@ -2242,7 +2424,7 @@ namespace MissionPlanner.GCSViews
                 }
 
                 // from ap_common.h
-                if (temp.id < (byte) MAVLink.MAV_CMD.LAST || temp.id == (byte) MAVLink.MAV_CMD.DO_SET_HOME)
+                if (temp.id < (ushort)MAVLink.MAV_CMD.LAST || temp.id == (ushort)MAVLink.MAV_CMD.DO_SET_HOME)
                 {
                     // check ralatice and terrain flags
                     if ((temp.options & 0x9) == 0 && i != 0)
@@ -2260,7 +2442,7 @@ namespace MissionPlanner.GCSViews
                 }
 
                 cell = Commands.Rows[i].Cells[Alt.Index] as DataGridViewTextBoxCell;
-                cell.Value = Math.Round((temp.alt*CurrentState.multiplierdist), 0);
+                cell.Value = temp.alt*CurrentState.multiplierdist;
                 cell = Commands.Rows[i].Cells[Lat.Index] as DataGridViewTextBoxCell;
                 cell.Value = temp.lat;
                 cell = Commands.Rows[i].Cells[Lon.Index] as DataGridViewTextBoxCell;
@@ -2274,6 +2456,9 @@ namespace MissionPlanner.GCSViews
                 cell.Value = temp.p3;
                 cell = Commands.Rows[i].Cells[Param4.Index] as DataGridViewTextBoxCell;
                 cell.Value = temp.p4;
+
+                // convert to utm
+                convertFromGeographic(temp.lat, temp.lng);
             }
 
             Commands.Enabled = true;
@@ -2579,7 +2764,7 @@ namespace MissionPlanner.GCSViews
         {
             using (OpenFileDialog fd = new OpenFileDialog())
             {
-                fd.Filter = "All Supported Types|*.txt;*.waypoints;*.shp";
+                fd.Filter = "All Supported Types|*.txt;*.waypoints;*.shp;*.mission";
                 DialogResult result = fd.ShowDialog();
                 string file = fd.FileName;
 
@@ -2591,8 +2776,29 @@ namespace MissionPlanner.GCSViews
                     }
                     else
                     {
-                        wpfilename = file;
-                        readQGC110wpfile(file);
+                        string line = "";
+                        using (var fs = File.OpenText(file))
+                        {
+                            line = fs.ReadLine();
+                        }
+
+                        if (line.StartsWith("{"))
+                        {
+                            var format = MissionFile.ReadFile(file);
+
+                            var cmds = MissionFile.ConvertToLocationwps(format);
+
+                            processToScreen(cmds);
+
+                            writeKML();
+
+                            MainMap.ZoomAndCenterMarkers("objects");
+                        }
+                        else
+                        {
+                            wpfilename = file;
+                            readQGC110wpfile(file);
+                        }
                     }
 
                     lbl_wpfile.Text = "Loaded " + Path.GetFileName(file);
@@ -2641,7 +2847,7 @@ namespace MissionPlanner.GCSViews
                         {
                             temp.options = 0;
                         }
-                        temp.id = (byte) (int) Enum.Parse(typeof (MAVLink.MAV_CMD), items[3], false);
+                        temp.id = (ushort)(int)Enum.Parse(typeof (MAVLink.MAV_CMD), items[3], false);
                         temp.p1 = float.Parse(items[4], new CultureInfo("en-US"));
 
                         if (temp.id == 99)
@@ -3705,6 +3911,27 @@ namespace MissionPlanner.GCSViews
 
         private void Commands_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
+            // we have modified a utm coords
+            if (e.ColumnIndex == coordZone.Index ||
+                e.ColumnIndex == coordNorthing.Index ||
+                e.ColumnIndex == coordEasting.Index)
+            {
+                convertFromUTM(e.RowIndex);
+            }
+
+            if(e.ColumnIndex == MGRS.Index)
+            {
+                convertFromMGRS(e.RowIndex);
+            }
+
+            // we have modified a ll coord
+            if (e.ColumnIndex == Lat.Index ||
+                e.ColumnIndex == Lon.Index)
+            {
+                convertFromGeographic(double.Parse(Commands.Rows[e.RowIndex].Cells[Lat.Index].Value.ToString()),
+                    double.Parse(Commands.Rows[e.RowIndex].Cells[Lon.Index].Value.ToString()));
+            }
+
             Commands_RowEnter(null,
                 new DataGridViewCellEventArgs(Commands.CurrentCell.ColumnIndex, Commands.CurrentCell.RowIndex));
 
@@ -3892,7 +4119,6 @@ namespace MissionPlanner.GCSViews
             if (float.TryParse(heading, out ans))
             {
                 MainMap.Bearing = ans;
-                FlightData.mymap.Bearing = ans;
             }
         }
 
@@ -4170,37 +4396,9 @@ namespace MissionPlanner.GCSViews
                 if (MainV2.comPort.MAV.cs.lat == 0 || MainV2.comPort.MAV.cs.lng == 0)
                     return;
 
-                PointLatLng currentloc = new PointLatLng(MainV2.comPort.MAV.cs.lat, MainV2.comPort.MAV.cs.lng);
+                var marker = Common.getMAVMarker(MainV2.comPort.MAV);
 
-                if (MainV2.comPort.MAV.cs.firmware == MainV2.Firmwares.ArduPlane ||
-                    MainV2.comPort.MAV.cs.firmware == MainV2.Firmwares.Ateryx)
-                {
-                    routesoverlay.Markers.Add(new GMapMarkerPlane(currentloc, MainV2.comPort.MAV.cs.yaw,
-                        MainV2.comPort.MAV.cs.groundcourse, MainV2.comPort.MAV.cs.nav_bearing,
-                        MainV2.comPort.MAV.cs.target_bearing, MainV2.comPort.MAV.cs.radius));
-                }
-                else if (MainV2.comPort.MAV.cs.firmware == MainV2.Firmwares.ArduRover)
-                {
-                    routesoverlay.Markers.Add(new GMapMarkerRover(currentloc, MainV2.comPort.MAV.cs.yaw,
-                        MainV2.comPort.MAV.cs.groundcourse, MainV2.comPort.MAV.cs.nav_bearing,
-                        MainV2.comPort.MAV.cs.target_bearing));
-                }
-                else if (MainV2.comPort.MAV.aptype == MAVLink.MAV_TYPE.HELICOPTER)
-                {
-                    routesoverlay.Markers.Add(
-                        (new GMapMarkerHeli(currentloc, MainV2.comPort.MAV.cs.yaw, MainV2.comPort.MAV.cs.groundcourse,
-                            MainV2.comPort.MAV.cs.nav_bearing)));
-                }
-                else if (MainV2.comPort.MAV.aptype == MAVLink.MAV_TYPE.ANTENNA_TRACKER)
-                {
-                    routesoverlay.Markers.Add(new GMapMarkerAntennaTracker(currentloc, MainV2.comPort.MAV.cs.yaw,
-                        MainV2.comPort.MAV.cs.target_bearing));
-                }
-                else
-                {
-                    routesoverlay.Markers.Add(new GMapMarkerQuad(currentloc, MainV2.comPort.MAV.cs.yaw,
-                        MainV2.comPort.MAV.cs.groundcourse, MainV2.comPort.MAV.cs.nav_bearing, MainV2.comPort.MAV.sysid));
-                }
+                routesoverlay.Markers.Add(marker);
 
                 if (MainV2.comPort.MAV.cs.mode.ToLower() == "guided" && MainV2.comPort.MAV.GuidedMode.x != 0)
                 {
@@ -4213,6 +4411,7 @@ namespace MissionPlanner.GCSViews
                 {
                     if (route.Points[route.Points.Count - 1].Lat != 0 && (mapupdate.AddSeconds(3) < DateTime.Now))
                     {
+                        PointLatLng currentloc = new PointLatLng(MainV2.comPort.MAV.cs.lat, MainV2.comPort.MAV.cs.lng);
                         updateMapPosition(currentloc);
                         mapupdate = DateTime.Now;
                     }
@@ -4286,7 +4485,7 @@ namespace MissionPlanner.GCSViews
         {
             polygongridmode = false;
             //FENCE_TOTAL
-            if (MainV2.comPort.MAV.param["FENCE_ACTION"] == null)
+            if (MainV2.comPort.MAV.param["FENCE_ENABLE"] == null)
             {
                 CustomMessageBox.Show("Not Supported");
                 return;
@@ -4322,37 +4521,47 @@ namespace MissionPlanner.GCSViews
                 return;
             }
 
-            string minalts =
-                (int.Parse(MainV2.comPort.MAV.param["FENCE_MINALT"].ToString())*CurrentState.multiplierdist).ToString(
-                    "0");
-            if (DialogResult.Cancel == InputBox.Show("Min Alt", "Box Minimum Altitude?", ref minalts))
-                return;
-
-            string maxalts =
-                (int.Parse(MainV2.comPort.MAV.param["FENCE_MAXALT"].ToString())*CurrentState.multiplierdist).ToString(
-                    "0");
-            if (DialogResult.Cancel == InputBox.Show("Max Alt", "Box Maximum Altitude?", ref maxalts))
-                return;
-
             int minalt = 0;
             int maxalt = 0;
 
-            if (!int.TryParse(minalts, out minalt))
+            if (MainV2.comPort.MAV.param.ContainsKey("FENCE_MINALT"))
             {
-                CustomMessageBox.Show("Bad Min Alt");
-                return;
+                string minalts =
+                    (int.Parse(MainV2.comPort.MAV.param["FENCE_MINALT"].ToString())*CurrentState.multiplierdist)
+                        .ToString(
+                            "0");
+                if (DialogResult.Cancel == InputBox.Show("Min Alt", "Box Minimum Altitude?", ref minalts))
+                    return;
+
+                if (!int.TryParse(minalts, out minalt))
+                {
+                    CustomMessageBox.Show("Bad Min Alt");
+                    return;
+                }
             }
 
-            if (!int.TryParse(maxalts, out maxalt))
+            if (MainV2.comPort.MAV.param.ContainsKey("FENCE_MAXALT"))
             {
-                CustomMessageBox.Show("Bad Max Alt");
-                return;
+                string maxalts =
+                    (int.Parse(MainV2.comPort.MAV.param["FENCE_MAXALT"].ToString())*CurrentState.multiplierdist)
+                        .ToString(
+                            "0");
+                if (DialogResult.Cancel == InputBox.Show("Max Alt", "Box Maximum Altitude?", ref maxalts))
+                    return;
+
+                if (!int.TryParse(maxalts, out maxalt))
+                {
+                    CustomMessageBox.Show("Bad Max Alt");
+                    return;
+                }
             }
 
             try
             {
-                MainV2.comPort.setParam("FENCE_MINALT", minalt);
-                MainV2.comPort.setParam("FENCE_MAXALT", maxalt);
+                if (MainV2.comPort.MAV.param.ContainsKey("FENCE_MINALT"))
+                    MainV2.comPort.setParam("FENCE_MINALT", minalt);
+                if (MainV2.comPort.MAV.param.ContainsKey("FENCE_MAXALT"))
+                    MainV2.comPort.setParam("FENCE_MAXALT", maxalt);
             }
             catch
             {
@@ -4430,7 +4639,8 @@ namespace MissionPlanner.GCSViews
                 FlightData.geofence.Polygons.Clear();
                 FlightData.geofence.Polygons.Add(new GMapPolygon(geofencepolygon.Points, "gf fd")
                 {
-                    Stroke = geofencepolygon.Stroke
+                    Stroke = geofencepolygon.Stroke,
+                    Fill = Brushes.Transparent
                 });
                 FlightData.geofence.Markers.Add(new GMarkerGoogle(geofenceoverlay.Markers[0].Position,
                     GMarkerGoogleType.red)
@@ -4887,66 +5097,70 @@ namespace MissionPlanner.GCSViews
         {
             PointLatLngAlt lastpnt = null;
 
-            DialogResult res = CustomMessageBox.Show("Ready ripp WP Path at Zoom = " + (int) MainMap.Zoom + " ?",
-                "GMap.NET", MessageBoxButtons.YesNo);
+            string maxzoomstring = "20";
+            if(InputBox.Show("max zoom", "Enter the max zoom to prefetch to.", ref maxzoomstring) != DialogResult.OK)
+                return;
+
+            int maxzoom = 20;
+            if (!int.TryParse(maxzoomstring, out maxzoom))
+            {
+                CustomMessageBox.Show(Strings.InvalidNumberEntered, Strings.ERROR);
+                return;
+            }
 
             fetchpathrip = true;
 
-            foreach (var pnt in pointlist)
-            {
-                if (pnt == null)
-                    continue;
+            maxzoom = Math.Min(maxzoom, MainMap.MaxZoom);
 
+            // zoom
+            for (int i = 1; i <= maxzoom; i++)
+            {
                 // exit if reqested
                 if (!fetchpathrip)
                     break;
 
-                // setup initial enviroment
-                if (lastpnt == null)
+                lastpnt = null;
+                // location
+                foreach (var pnt in pointlist)
                 {
-                    lastpnt = pnt;
-                    continue;
-                }
+                    if (pnt == null)
+                        continue;
 
-                RectLatLng area = new RectLatLng();
-                double top = Math.Max(lastpnt.Lat, pnt.Lat);
-                double left = Math.Min(lastpnt.Lng, pnt.Lng);
-                double bottom = Math.Min(lastpnt.Lat, pnt.Lat);
-                double right = Math.Max(lastpnt.Lng, pnt.Lng);
+                    // exit if reqested
+                    if (!fetchpathrip)
+                        break;
 
-                area.LocationTopLeft = new PointLatLng(top, left);
-                area.HeightLat = top - bottom;
-                area.WidthLng = right - left;
-
-
-                int todo;
-                // todo
-                // split up pull area to smaller chunks
-
-                for (int i = 1; i <= MainMap.MaxZoom; i++)
-                {
-                    if (res == DialogResult.Yes)
+                    // setup initial enviroment
+                    if (lastpnt == null)
                     {
-                        TilePrefetcher obj = new TilePrefetcher();
-                        obj.KeyDown += obj_KeyDown;
-                        obj.ShowCompleteMessage = false;
-                        obj.Start(area, i, MainMap.MapProvider, 100, 0);
+                        lastpnt = pnt;
+                        continue;
                     }
-                    else if (res == DialogResult.No)
+
+                    RectLatLng area = new RectLatLng();
+                    double top = Math.Max(lastpnt.Lat, pnt.Lat);
+                    double left = Math.Min(lastpnt.Lng, pnt.Lng);
+                    double bottom = Math.Min(lastpnt.Lat, pnt.Lat);
+                    double right = Math.Max(lastpnt.Lng, pnt.Lng);
+
+                    area.LocationTopLeft = new PointLatLng(top, left);
+                    area.HeightLat = top - bottom;
+                    area.WidthLng = right - left;
+
+                    TilePrefetcher obj = new TilePrefetcher();
+                    ThemeManager.ApplyThemeTo(obj);
+                    obj.KeyDown += obj_KeyDown;
+                    obj.ShowCompleteMessage = false;
+                    obj.Start(area, i, MainMap.MapProvider, 0, 0);
+
+                    if (obj.UserAborted)
                     {
-                    }
-                    else
-                    {
+                        fetchpathrip = false;
                         break;
                     }
-                }
 
-                if (res == DialogResult.Cancel || res == DialogResult.None)
-                {
-                    break;
+                    lastpnt = pnt;
                 }
-
-                lastpnt = pnt;
             }
         }
 
@@ -4973,20 +5187,28 @@ namespace MissionPlanner.GCSViews
 
             if (!area.IsEmpty)
             {
-                DialogResult res = CustomMessageBox.Show("Ready ripp at Zoom = " + (int) MainMap.Zoom + " ?", "GMap.NET",
-                    MessageBoxButtons.YesNo);
+                string maxzoomstring = "20";
+                if (InputBox.Show("max zoom", "Enter the max zoom to prefetch to.", ref maxzoomstring) != DialogResult.OK)
+                    return;
 
-                if (res == DialogResult.Yes)
+                int maxzoom = 20;
+                if (!int.TryParse(maxzoomstring, out maxzoom))
                 {
-                    for (int i = 1; i <= MainMap.MaxZoom; i++)
-                    {
-                        TilePrefetcher obj = new TilePrefetcher();
-                        obj.ShowCompleteMessage = false;
-                        obj.Start(area, i, MainMap.MapProvider, 100, 0);
+                    CustomMessageBox.Show(Strings.InvalidNumberEntered, Strings.ERROR);
+                    return;
+                }
 
-                        if (obj.UserAborted)
-                            break;
-                    }
+                maxzoom = Math.Min(maxzoom, MainMap.MaxZoom);
+
+                for (int i = 1; i <= MainMap.MaxZoom; i++)
+                {
+                    TilePrefetcher obj = new TilePrefetcher();
+                    ThemeManager.ApplyThemeTo(obj);
+                    obj.ShowCompleteMessage = false;
+                    obj.Start(area, i, MainMap.MapProvider, 0, 0);
+
+                    if (obj.UserAborted)
+                        break;
                 }
             }
             else
@@ -5277,8 +5499,8 @@ namespace MissionPlanner.GCSViews
             double y, double z, object tag = null)
         {
             Commands.Rows[rowIndex].Cells[Command.Index].Value = cmd.ToString();
-            Commands.Rows[rowIndex].Cells[Tag.Index].Tag = tag;
-            Commands.Rows[rowIndex].Cells[Tag.Index].Value = tag;
+            Commands.Rows[rowIndex].Cells[TagData.Index].Tag = tag;
+            Commands.Rows[rowIndex].Cells[TagData.Index].Value = tag;
 
             ChangeColumnHeader(cmd.ToString());
 
@@ -5483,6 +5705,9 @@ namespace MissionPlanner.GCSViews
                         {
                             string[] items = line.Split(new[] {' ', '\t'}, StringSplitOptions.RemoveEmptyEntries);
 
+                            if (items.Length < 2)
+                                continue;
+                            
                             drawnpolygon.Points.Add(new PointLatLng(double.Parse(items[0]), double.Parse(items[1])));
                             addpolygonmarkergrid(drawnpolygon.Points.Count.ToString(), double.Parse(items[1]),
                                 double.Parse(items[0]), 0);
@@ -5511,15 +5736,6 @@ namespace MissionPlanner.GCSViews
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
-            if (MainV2.comPort.MAV.cs.firmware != MainV2.Firmwares.ArduPlane)
-            {
-                geoFenceToolStripMenuItem.Enabled = false;
-            }
-            else
-            {
-                geoFenceToolStripMenuItem.Enabled = true;
-            }
-
             if (CurentRectMarker == null && CurrentRallyPt == null && groupmarkers.Count == 0)
             {
                 deleteWPToolStripMenuItem.Enabled = false;
@@ -5627,7 +5843,9 @@ namespace MissionPlanner.GCSViews
                     e.Graphics.DrawLine(new Pen(MainMap.SelectionPen.Color, 1), x1, y1, x2, y2);
                 }
             }
-            
+
+            e.Graphics.ResetTransform();
+
             polyicon.Location = new Point(10,100);
             polyicon.Paint(e.Graphics);
         }
@@ -6282,7 +6500,6 @@ Column 1: Field type (RALLY is the only one at the moment -- may have RALLY_LAND
 
             int Points = 4;
             int Radius = 0;
-            int Direction = 1;
             int startangle = 0;
             int minalt = 5;
             int maxalt = 20;
@@ -6467,17 +6684,25 @@ Column 1: Field type (RALLY is the only one at the moment -- may have RALLY_LAND
 
                 utmpos basepos = new utmpos(MouseDownStart);
 
-                foreach (var pathPoint in gp.PathPoints)
+                try
                 {
-                    utmpos newpos = new utmpos(basepos);
 
-                    newpos.x += pathPoint.X;
-                    newpos.y += -pathPoint.Y;
+                    foreach (var pathPoint in gp.PathPoints)
+                    {
+                        utmpos newpos = new utmpos(basepos);
 
-                    var newlla = newpos.ToLLA();
-                    quickadd = true;
-                    AddWPToMap(newlla.Lat, newlla.Lng, int.Parse(TXT_DefaultAlt.Text));
-                    
+                        newpos.x += pathPoint.X;
+                        newpos.y += -pathPoint.Y;
+
+                        var newlla = newpos.ToLLA();
+                        quickadd = true;
+                        AddWPToMap(newlla.Lat, newlla.Lng, int.Parse(TXT_DefaultAlt.Text));
+
+                    }
+                }
+                catch (ArgumentException ex)
+                {
+                    CustomMessageBox.Show("Bad input options, please try again\n" + ex.ToString(), Strings.ERROR);
                 }
 
                 quickadd = false;
@@ -6490,6 +6715,40 @@ Column 1: Field type (RALLY is the only one at the moment -- may have RALLY_LAND
             TXT_homealt.Text = srtm.getAltitude(MouseDownStart.Lat, MouseDownStart.Lng).alt.ToString("0");
             TXT_homelat.Text = MouseDownStart.Lat.ToString();
             TXT_homelng.Text = MouseDownStart.Lng.ToString();
+        }
+
+        private void coords1_SystemChanged(object sender, EventArgs e)
+        {
+            if (coords1.System == Coords.CoordsSystems.GEO.ToString())
+            {
+                Lat.Visible = true;
+                Lon.Visible = true;
+
+                coordZone.Visible = false;
+                coordEasting.Visible = false;
+                coordNorthing.Visible = false;
+                MGRS.Visible = false;
+            }
+            else if (coords1.System == Coords.CoordsSystems.MGRS.ToString())
+            {
+                Lat.Visible = false;
+                Lon.Visible = false;
+
+                coordZone.Visible = false;
+                coordEasting.Visible = false;
+                coordNorthing.Visible = false;
+                MGRS.Visible = true;
+            }
+            else if (coords1.System == Coords.CoordsSystems.UTM.ToString())
+            {
+                Lat.Visible = false;
+                Lon.Visible = false;
+
+                coordZone.Visible = true;
+                coordEasting.Visible = true;
+                coordNorthing.Visible = true;
+                MGRS.Visible = false;
+            }
         }
     }
 }

@@ -50,6 +50,7 @@ namespace MissionPlanner.GCSViews.ConfigurationView
                 if (!String.IsNullOrEmpty(Settings.Instance["rawparam_" + col.Name + "_width"]))
                 {
                     col.Width = Settings.Instance.GetInt32("rawparam_" + col.Name + "_width");
+                    log.InfoFormat("{0} to {1}", col.Name, col.Width);
                 }
             }
 
@@ -106,8 +107,13 @@ namespace MissionPlanner.GCSViews.ConfigurationView
         {
             var param2 = ParamFile.loadParamFile(fn);
 
+            var loaded = 0;
+            var missed = 0;
+            List<string> missing = new List<string>();
+
             foreach (string name in param2.Keys)
             {
+                var set = false;
                 var value = param2[name].ToString();
                 // set param table as well
                 foreach (DataGridViewRow row in Params.Rows)
@@ -136,11 +142,32 @@ namespace MissionPlanner.GCSViews.ConfigurationView
                         continue;
                     if (row.Cells[0].Value.ToString() == name)
                     {
+                        set = true;
                         if (row.Cells[1].Value.ToString() != value)
                             row.Cells[1].Value = value;
                         break;
                     }
                 }
+
+                if (set)
+                {
+                    loaded++;
+                }
+                else
+                {
+                    missed++;
+                    missing.Add(name);
+                }
+            }
+
+            if (missed > 0)
+            {
+                string list = "";
+                foreach (var item in missing)
+                {
+                    list += item + " ";
+                }
+                CustomMessageBox.Show("Missing " + missed + " params\n"+ list, "No matching Params", MessageBoxButtons.OK);
             }
         }
 
@@ -182,9 +209,22 @@ namespace MissionPlanner.GCSViews.ConfigurationView
             if (Common.MessageShowAgain("Write Raw Params", "Are you Sure?") != DialogResult.OK)
                 return;
 
-            var temp = (Hashtable) _changes.Clone();
+            // sort with enable at the bottom - this ensures params are set before the function is disabled
+            var temp = new List<string>();
+            foreach (var item in _changes.Keys)
+            {
+                temp.Add((string)item);
+            }
 
-            foreach (string value in temp.Keys)
+            temp.Sort((a,b)=>
+            {
+                if (a == null || b == null) return 0;
+                if (a.EndsWith("ENABLE")) return 1;
+                if (a.EndsWith("ENABLE") && b.EndsWith("ENABLE")) return 0;
+                return -1;
+            });
+
+            foreach (string value in temp)
             {
                 try
                 {
@@ -257,7 +297,7 @@ namespace MissionPlanner.GCSViews.ConfigurationView
             if (!MainV2.comPort.BaseStream.IsOpen)
                 return;
 
-            if (DialogResult.OK ==
+            if (!MainV2.comPort.MAV.cs.armed || DialogResult.OK ==
                 CustomMessageBox.Show(Strings.WarningUpdateParamList, Strings.ERROR, MessageBoxButtons.OKCancel))
             {
                 ((Control) sender).Enabled = false;
@@ -369,11 +409,15 @@ namespace MissionPlanner.GCSViews.ConfigurationView
 
             //Params.Sort(Params.Columns[0], ListSortDirection.Ascending);
 
+            log.Info("processToScreen");
+
             var sorted = new List<string>();
             foreach (string item in MainV2.comPort.MAV.param.Keys)
                 sorted.Add(item);
 
             sorted.Sort();
+
+            log.Info("sorted");
 
             var rowlist = new List<DataGridViewRow>();
 
@@ -383,7 +427,7 @@ namespace MissionPlanner.GCSViews.ConfigurationView
                 if (value == null || value == "")
                     continue;
 
-                //System.Diagnostics.Debug.WriteLine("Doing: " + value);
+                log.Info("Doing: " + value);
 
                 var row = new DataGridViewRow();
                 rowlist.Add(row);
@@ -417,7 +461,13 @@ namespace MissionPlanner.GCSViews.ConfigurationView
                 }
             }
 
+            log.Info("about to add all");
+
+            Params.Enabled = false;
             Params.Rows.AddRange(rowlist.ToArray());
+            Params.Enabled = true;
+
+            log.Info("Done");
         }
 
         private void updatedefaultlist(object crap)
@@ -468,7 +518,7 @@ namespace MissionPlanner.GCSViews.ConfigurationView
 
         private void BUT_paramfileload_Click(object sender, EventArgs e)
         {
-            var filepath = Application.StartupPath + Path.DirectorySeparatorChar + CMB_paramfiles.Text;
+            var filepath = Settings.GetUserDataDirectory() + CMB_paramfiles.Text;
 
             try
             {
@@ -510,7 +560,7 @@ namespace MissionPlanner.GCSViews.ConfigurationView
                 {
                     MainV2.comPort.setParam(new[] {"FORMAT_VERSION", "SYSID_SW_MREV"}, 0);
                     Thread.Sleep(1000);
-                    MainV2.comPort.doReboot(false);
+                    MainV2.comPort.doReboot(false, true);
                     MainV2.comPort.BaseStream.Close();
 
 

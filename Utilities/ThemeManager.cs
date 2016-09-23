@@ -102,7 +102,6 @@ namespace MissionPlanner.Utilities
             temp.Add(new GCSViews.FlightPlanner());
             temp.Add(new GCSViews.Help());
             temp.Add(new GCSViews.InitialSetup());
-            temp.Add(new GCSViews.Simulation());
             temp.Add(new GCSViews.SoftwareConfig());
             temp.Add(new GCSViews.Terminal());
 
@@ -175,7 +174,6 @@ namespace MissionPlanner.Utilities
             temp.Add(new GCSViews.ConfigurationView.ConfigAteryx());
             temp.Add(new GCSViews.ConfigurationView.ConfigAteryxSensors());
             temp.Add(new GCSViews.ConfigurationView.ConfigBatteryMonitoring());
-            temp.Add(new GCSViews.ConfigurationView.ConfigCameraStab());
             temp.Add(new GCSViews.ConfigurationView.ConfigFailSafe());
             temp.Add(new GCSViews.ConfigurationView.ConfigFirmwareDisabled());
             temp.Add(new GCSViews.ConfigurationView.ConfigFlightModes());
@@ -567,10 +565,24 @@ mc:Ignorable=""d""
                     ctl.BackColor = BGColor;
                     ctl.ForeColor = TextColor; // Color.FromArgb(0xe6, 0xe8, 0xea);
                 }
+                else if (ctl.GetType() == typeof(RadialGradientBG))
+                {
+                    var rbg = ctl as RadialGradientBG;
+                    rbg.CenterColor = ControlBGColor;
+                    rbg.OutsideColor = ButBG;
+                }
+                else if (ctl.GetType() == typeof(GradientBG))
+                {
+                    var rbg = ctl as GradientBG;
+                    rbg.CenterColor = ControlBGColor;
+                    rbg.OutsideColor = ButBG;
+                }
                 else if (ctl.GetType() == typeof (Form))
                 {
                     ctl.BackColor = BGColor;
-                    ctl.ForeColor = TextColor; // Color.FromArgb(0xe6, 0xe8, 0xea);
+                    ctl.ForeColor = TextColor;
+                    if (Program.IconFile != null)
+                        ((Form)ctl).Icon = Icon.FromHandle(((Bitmap)Program.IconFile).GetHicon());
                 }
                 else if (ctl.GetType() == typeof (RichTextBox))
                 {
@@ -668,6 +680,11 @@ mc:Ignorable=""d""
                 {
                     ((HorizontalProgressBar2) ctl).BackgroundColor = ControlBGColor;
                     ((HorizontalProgressBar2) ctl).ValueColor = Color.FromArgb(148, 193, 31);
+                }
+                else if (ctl.GetType() == typeof(MyProgressBar))
+                {
+                    ((MyProgressBar)ctl).BGGradBot = ControlBGColor;
+                    ((MyProgressBar)ctl).BGGradTop = BGColor;
                 }
 
                 if (ctl.Controls.Count > 0)
@@ -753,7 +770,8 @@ mc:Ignorable=""d""
                     DomainUpDown txt = (DomainUpDown) ctl;
                     txt.BorderStyle = BorderStyle.None;
                 }
-                else if (ctl.GetType() == typeof (GroupBox) || ctl.GetType() == typeof (UserControl) || ctl.GetType() == typeof(DataTreeListView))
+                else if (ctl.GetType() == typeof (GroupBox) || ctl.GetType() == typeof (UserControl) ||
+                         ctl.GetType() == typeof (DataTreeListView))
                 {
                     ctl.BackColor = BGColor;
                     ctl.ForeColor = TextColor;
@@ -796,10 +814,24 @@ mc:Ignorable=""d""
                     ctl.BackColor = BGColor;
                     ctl.ForeColor = TextColor; // Color.FromArgb(0xe6, 0xe8, 0xea);
                 }
+                else if (ctl.GetType() == typeof (RadialGradientBG))
+                {
+                    var rbg = ctl as RadialGradientBG;
+                    rbg.CenterColor = ControlBGColor;
+                    rbg.OutsideColor = ButBG;
+                }
+                else if (ctl.GetType() == typeof(GradientBG))
+                {
+                    var rbg = ctl as GradientBG;
+                    rbg.CenterColor = ControlBGColor;
+                    rbg.OutsideColor = ButBG;
+                }
                 else if (ctl.GetType() == typeof (Form))
                 {
                     ctl.BackColor = BGColor;
-                    ctl.ForeColor = TextColor; // Color.FromArgb(0xe6, 0xe8, 0xea);
+                    ctl.ForeColor = TextColor;
+                    if (Program.IconFile != null)
+                        ((Form)ctl).Icon = Icon.FromHandle(((Bitmap)Program.IconFile).GetHicon());
                 }
                 else if (ctl.GetType() == typeof (RichTextBox))
                 {
@@ -863,7 +895,8 @@ mc:Ignorable=""d""
                     ComboBox CMB = (ComboBox) ctl;
                     CMB.FlatStyle = FlatStyle.Flat;
                 }
-                else if (ctl.GetType() == typeof (NumericUpDown) || ctl.GetType() == typeof (MavlinkNumericUpDown))
+                else if (ctl.GetType() == typeof (NumericUpDown) ||
+                         ctl.GetType() == typeof (MavlinkNumericUpDown))
                 {
                     ctl.BackColor = ControlBGColor;
                     ctl.ForeColor = TextColor;
@@ -899,6 +932,11 @@ mc:Ignorable=""d""
                 {
                     ((HorizontalProgressBar2) ctl).BackgroundColor = ControlBGColor;
                     ((HorizontalProgressBar2) ctl).ValueColor = Color.FromArgb(148, 193, 31);
+                }
+                else if (ctl.GetType() == typeof(MyProgressBar))
+                {
+                    ((MyProgressBar)ctl).BGGradBot= ControlBGColor;
+                    ((MyProgressBar)ctl).BGGradTop = BGColor;
                 }
 
                 if (ctl.Controls.Count > 0)
@@ -1016,7 +1054,9 @@ mc:Ignorable=""d""
                 else if (ctl.GetType() == typeof (Form))
                 {
                     ctl.BackColor = BGColor;
-                    ctl.ForeColor = TextColor; // Color.FromArgb(0xe6, 0xe8, 0xea);
+                    ctl.ForeColor = TextColor;
+                    if (Program.IconFile != null)
+                        ((Form)ctl).Icon = Icon.FromHandle(((Bitmap)Program.IconFile).GetHicon());
                 }
                 else if (ctl.GetType() == typeof (RichTextBox))
                 {

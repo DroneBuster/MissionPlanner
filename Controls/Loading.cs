@@ -16,12 +16,14 @@ namespace MissionPlanner.Controls
     {
         static Loading Instance;
 
+        static object locker = new object();
+
         public Loading()
         {
             InitializeComponent();
         }
 
-        public string Text 
+        public new string Text 
         {
             get { return label1.Text; }
             set
@@ -37,7 +39,7 @@ namespace MissionPlanner.Controls
             }
         }
 
-        public static void Close()
+        public new static void Close()
         {
             if (Instance != null)
             {
@@ -62,27 +64,49 @@ namespace MissionPlanner.Controls
         /// <returns></returns>
         public static Loading ShowLoading(string Text, IWin32Window owner = null)
         {
-            if (Instance != null && !Instance.IsDisposed)
+            // ensure we only have one instance at a time
+            lock (locker)
             {
-                Instance.Text = Text;
-                return Instance;
+                if (Instance != null && !Instance.IsDisposed)
+                {
+                    Instance.Text = Text;
+                    return Instance;
+                }
+
+                Loading frm = new Loading();
+                frm.TopMost = true;
+                frm.StartPosition = FormStartPosition.CenterParent;
+                frm.Closing += Frm_Closing;
+
+                // set instance
+                Instance = frm;
+                // set text
+                Instance.label1.Text = Text;
+
+                ThemeManager.ApplyThemeTo(frm);
+
+                // display on ui thread
+                if (MainV2.instance.InvokeRequired)
+                {
+                    MainV2.instance.Invoke((MethodInvoker) delegate
+                    {
+                        frm.Show(owner);
+                        Application.DoEvents();
+                    });
+                }
+                else
+                {
+                    frm.Show(owner);
+                    Application.DoEvents();
+                }
+
+                return frm;
             }
+        }
 
-            Loading frm = new Loading();
-            frm.Text = Text;
-            frm.TopMost = true;
-            frm.StartPosition = FormStartPosition.CenterParent;
-
-            ThemeManager.ApplyThemeTo(frm);
-
-            MainV2.instance.Invoke((MethodInvoker) delegate {
-                frm.Show(owner);
-                Application.DoEvents();
-            });
-
-            Instance = frm;
-
-            return frm;
+        private static void Frm_Closing(object sender, CancelEventArgs e)
+        {
+            Instance = null;
         }
     }
 }

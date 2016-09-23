@@ -129,7 +129,7 @@ namespace MissionPlanner.Utilities
                 if (!File.Exists(ofd.FileName))
                     return;
 
-                var file =  new CollectionBuffer<string>(File.OpenRead(ofd.FileName));
+                var file =  new CollectionBuffer(File.OpenRead(ofd.FileName));
 
                 int bins = (int) NUM_bins.Value;
 
@@ -171,18 +171,14 @@ namespace MissionPlanner.Utilities
                 double[] freqt = null;
                 double samplerate = 0;
 
-                Log.DFLog dflog = new Log.DFLog();
-
-                while (!file.EndOfStream)
+                foreach (var item in file.GetEnumeratorType(new string[] { "ACC1", "GYR1" }))
                 {
-                    var item = dflog.GetDFItemFromLine(file.ReadLine(), 0);
-
                     if (item.msgtype == "ACC1")
                     {
-                        int offsetAX = dflog.FindMessageOffset("ACC1", "AccX");
-                        int offsetAY = dflog.FindMessageOffset("ACC1", "AccY");
-                        int offsetAZ = dflog.FindMessageOffset("ACC1", "AccZ");
-                        int offsetTime = dflog.FindMessageOffset("ACC1", "TimeUS");
+                        int offsetAX = file.dflog.FindMessageOffset("ACC1", "AccX");
+                        int offsetAY = file.dflog.FindMessageOffset("ACC1", "AccY");
+                        int offsetAZ = file.dflog.FindMessageOffset("ACC1", "AccZ");
+                        int offsetTime = file.dflog.FindMessageOffset("ACC1", "TimeUS");
 
                         double time = double.Parse(item.items[offsetTime])/1000.0;
 
@@ -202,10 +198,10 @@ namespace MissionPlanner.Utilities
                     }
                     else if (item.msgtype == "GYR1")
                     {
-                        int offsetGX = dflog.FindMessageOffset("GYR1", "GyrX");
-                        int offsetGY = dflog.FindMessageOffset("GYR1", "GyrY");
-                        int offsetGZ = dflog.FindMessageOffset("GYR1", "GyrZ");
-                        int offsetTime = dflog.FindMessageOffset("ACC1", "TimeUS");
+                        int offsetGX = file.dflog.FindMessageOffset("GYR1", "GyrX");
+                        int offsetGY = file.dflog.FindMessageOffset("GYR1", "GyrY");
+                        int offsetGZ = file.dflog.FindMessageOffset("GYR1", "GyrZ");
+                        int offsetTime = file.dflog.FindMessageOffset("ACC1", "TimeUS");
 
                         double time = double.Parse(item.items[offsetTime])/1000.0;
 
@@ -317,7 +313,7 @@ namespace MissionPlanner.Utilities
                 if (!File.Exists(ofd.FileName))
                     return;
 
-                var file = new CollectionBuffer<string>(File.OpenRead(ofd.FileName));
+                var file = new CollectionBuffer(File.OpenRead(ofd.FileName));
 
                 int bins = (int) NUM_bins.Value;
 
@@ -336,12 +332,8 @@ namespace MissionPlanner.Utilities
                 for (int a = 0; a < alldata.Length; a++)
                     alldata[a] = new datastate();
 
-                Log.DFLog dflog = new Log.DFLog();
-
-                while (!file.EndOfStream)
+                foreach (var item in file.GetEnumeratorType(new string[] { "ACC1", "GYR1", "ACC2", "GYR2", "ACC3", "GYR3", "ACC4", "GYR4" }))
                 {
-                    var item = dflog.GetDFItemFromLine(file.ReadLine(), 0);
-
                     if (item.msgtype == null)
                     {
                         continue;
@@ -352,10 +344,10 @@ namespace MissionPlanner.Utilities
                         int sensorno = int.Parse(item.msgtype.Substring(3)) - 1 + 3;
                         alldata[sensorno].type = item.msgtype;
 
-                        int offsetAX = dflog.FindMessageOffset(item.msgtype, "AccX");
-                        int offsetAY = dflog.FindMessageOffset(item.msgtype, "AccY");
-                        int offsetAZ = dflog.FindMessageOffset(item.msgtype, "AccZ");
-                        int offsetTime = dflog.FindMessageOffset(item.msgtype, "TimeUS");
+                        int offsetAX = file.dflog.FindMessageOffset(item.msgtype, "AccX");
+                        int offsetAY = file.dflog.FindMessageOffset(item.msgtype, "AccY");
+                        int offsetAZ = file.dflog.FindMessageOffset(item.msgtype, "AccZ");
+                        int offsetTime = file.dflog.FindMessageOffset(item.msgtype, "TimeUS");
 
                         double time = double.Parse(item.items[offsetTime])/1000.0;
 
@@ -374,10 +366,10 @@ namespace MissionPlanner.Utilities
                         int sensorno = int.Parse(item.msgtype.Substring(3)) - 1;
                         alldata[sensorno].type = item.msgtype;
 
-                        int offsetGX = dflog.FindMessageOffset(item.msgtype, "GyrX");
-                        int offsetGY = dflog.FindMessageOffset(item.msgtype, "GyrY");
-                        int offsetGZ = dflog.FindMessageOffset(item.msgtype, "GyrZ");
-                        int offsetTime = dflog.FindMessageOffset(item.msgtype, "TimeUS");
+                        int offsetGX = file.dflog.FindMessageOffset(item.msgtype, "GyrX");
+                        int offsetGY = file.dflog.FindMessageOffset(item.msgtype, "GyrY");
+                        int offsetGZ = file.dflog.FindMessageOffset(item.msgtype, "GyrZ");
+                        int offsetTime = file.dflog.FindMessageOffset(item.msgtype, "TimeUS");
 
                         double time = double.Parse(item.items[offsetTime])/1000.0;
 
@@ -470,6 +462,166 @@ namespace MissionPlanner.Utilities
         private string zedGraphControl_PointValueEvent(ZedGraphControl sender, GraphPane pane, CurveItem curve, int iPt)
         {
             return String.Format("{0} hz/{1} rpm", curve[iPt].X, curve[iPt].X*60.0);
+        }
+
+        private void but_fftimu_Click(object sender, EventArgs e)
+        {
+            Utilities.FFT2 fft = new FFT2();
+            using (
+                OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "*.log;*.bin|*.log;*.bin";
+
+                ofd.ShowDialog();
+
+                if (!File.Exists(ofd.FileName))
+                    return;
+
+                var file = new CollectionBuffer(File.OpenRead(ofd.FileName));
+
+                int bins = (int)NUM_bins.Value;
+
+                int N = 1 << bins;
+
+                Color[] color = new Color[] { Color.Red, Color.Green, Color.Blue, Color.Black, Color.Violet, Color.Orange };
+                ZedGraphControl[] ctls = new ZedGraphControl[]
+                {
+                    zedGraphControl1, zedGraphControl2, zedGraphControl3, zedGraphControl4, zedGraphControl5,
+                    zedGraphControl6
+                };
+
+                // 3 imus * 2 sets of measurements(gyr/acc)
+                datastate[] alldata = new datastate[3 * 2];
+                for (int a = 0; a < alldata.Length; a++)
+                    alldata[a] = new datastate();
+
+                foreach (var item in file.GetEnumeratorType(new string[] {"IMU","IMU2","IMU3"}))
+                {
+                    if (item.msgtype == null)
+                    {
+                        continue;
+                    }
+
+                    if (item.msgtype.StartsWith("IMU"))
+                    {
+                        int sensorno = 0;
+                        if (item.msgtype == "IMU")
+                            sensorno = 0;
+                        if (item.msgtype == "IMU2")
+                            sensorno = 1;
+                        if (item.msgtype == "IMU3")
+                            sensorno = 2;
+
+                        alldata[sensorno+3].type = item.msgtype +" A";
+
+                        int offsetAX = file.dflog.FindMessageOffset(item.msgtype, "AccX");
+                        int offsetAY = file.dflog.FindMessageOffset(item.msgtype, "AccY");
+                        int offsetAZ = file.dflog.FindMessageOffset(item.msgtype, "AccZ");
+                        int offsetTime = file.dflog.FindMessageOffset(item.msgtype, "TimeUS");
+
+                        double time = double.Parse(item.items[offsetTime]) / 1000.0;
+
+                        if (time != alldata[sensorno + 3].lasttime)
+                            alldata[sensorno + 3].timedelta = alldata[sensorno + 3].timedelta * 0.99 +
+                                                          (time - alldata[sensorno + 3].lasttime) * 0.01;
+
+                        alldata[sensorno + 3].lasttime = time;
+
+                        alldata[sensorno + 3].datax.Add(double.Parse(item.items[offsetAX]));
+                        alldata[sensorno + 3].datay.Add(double.Parse(item.items[offsetAY]));
+                        alldata[sensorno + 3].dataz.Add(double.Parse(item.items[offsetAZ]));
+
+                        //gyro
+                        alldata[sensorno].type = item.msgtype + " G";
+
+                        int offsetGX = file.dflog.FindMessageOffset(item.msgtype, "GyrX");
+                        int offsetGY = file.dflog.FindMessageOffset(item.msgtype, "GyrY");
+                        int offsetGZ = file.dflog.FindMessageOffset(item.msgtype, "GyrZ");
+
+                        if (time != alldata[sensorno].lasttime)
+                            alldata[sensorno].timedelta = alldata[sensorno].timedelta * 0.99 +
+                                                          (time - alldata[sensorno].lasttime) * 0.01;
+
+                        alldata[sensorno].lasttime = time;
+
+                        alldata[sensorno].datax.Add(double.Parse(item.items[offsetGX]));
+                        alldata[sensorno].datay.Add(double.Parse(item.items[offsetGY]));
+                        alldata[sensorno].dataz.Add(double.Parse(item.items[offsetGZ]));
+                    }
+                }
+
+                int controlindex = 0;
+
+                foreach (var sensordata in alldata)
+                {
+                    if (sensordata.datax.Count <= N)
+                        continue;
+
+                    double samplerate = 0;
+
+                    samplerate = Math.Round(1000 / sensordata.timedelta, 1);
+
+                    double[] freqt = fft.FreqTable(N, (int)samplerate);
+
+                    double[] avgx = new double[N / 2];
+                    double[] avgy = new double[N / 2];
+                    double[] avgz = new double[N / 2];
+
+                    int totalsamples = sensordata.datax.Count;
+                    int count = totalsamples / N;
+                    int done = 0;
+                    while (count > 1) // skip last part
+                    {
+                        var fftanswerx = fft.rin(sensordata.datax.Skip(N * done).Take(N).ToArray(), (uint)bins);
+                        var fftanswery = fft.rin(sensordata.datay.Skip(N * done).Take(N).ToArray(), (uint)bins);
+                        var fftanswerz = fft.rin(sensordata.dataz.Skip(N * done).Take(N).ToArray(), (uint)bins);
+
+                        for (int b = 0; b < N / 2; b++)
+                        {
+                            if (freqt[b] < (double)NUM_startfreq.Value)
+                                continue;
+
+                            avgx[b] += fftanswerx[b] / (N / 2);
+                            avgy[b] += fftanswery[b] / (N / 2);
+                            avgz[b] += fftanswerz[b] / (N / 2);
+                        }
+
+                        count--;
+                        done++;
+                    }
+
+                    ZedGraph.PointPairList pplx = new ZedGraph.PointPairList(freqt, avgx);
+                    ZedGraph.PointPairList pply = new ZedGraph.PointPairList(freqt, avgy);
+                    ZedGraph.PointPairList pplz = new ZedGraph.PointPairList(freqt, avgz);
+
+                    var curvex = new LineItem(sensordata.type + " x", pplx, color[0], SymbolType.None);
+                    var curvey = new LineItem(sensordata.type + " y", pply, color[1], SymbolType.None);
+                    var curvez = new LineItem(sensordata.type + " z", pplz, color[2], SymbolType.None);
+
+                    ctls[controlindex].GraphPane.Legend.IsVisible = true;
+
+                    ctls[controlindex].GraphPane.XAxis.Title.Text = "Freq Hz";
+                    ctls[controlindex].GraphPane.YAxis.Title.Text = "Amplitude";
+                    ctls[controlindex].GraphPane.Title.Text = "FFT " + sensordata.type + " - " +
+                                                              Path.GetFileName(ofd.FileName) + " - " + samplerate +
+                                                              "hz input";
+
+                    ctls[controlindex].GraphPane.CurveList.Clear();
+
+                    ctls[controlindex].GraphPane.CurveList.Add(curvex);
+                    ctls[controlindex].GraphPane.CurveList.Add(curvey);
+                    ctls[controlindex].GraphPane.CurveList.Add(curvez);
+
+                    ctls[controlindex].Invalidate();
+                    ctls[controlindex].AxisChange();
+
+                    ctls[controlindex].GraphPane.XAxis.Scale.Max = samplerate / 2;
+
+                    ctls[controlindex].Refresh();
+
+                    controlindex++;
+                }
+            }
         }
     }
 }

@@ -2,14 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using GMap.NET;
+using log4net;
 using MissionPlanner.Utilities;
+using System.Collections.Concurrent;
 
 namespace MissionPlanner
 {
     public class MAVState : MAVLink
     {
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public MAVState()
         {
             this.packetspersecond = new double[0x100];
@@ -17,7 +22,7 @@ namespace MissionPlanner
             this.lastvalidpacket = DateTime.MinValue;
             this.sysid = 0;
             this.compid = 0;
-            linkid = 0;
+            sendlinkid = (byte)(new Random().Next(256));
             signing = false;
             this.param = new MAVLinkParamList();
             this.packets = new Dictionary<uint, MAVLinkMessage>();
@@ -73,8 +78,26 @@ namespace MissionPlanner
 
         public byte linkid { get; set; }
 
+        public byte sendlinkid { get; internal set; }
+
+        public UInt64 timestamp { get; set; }
+
+        internal byte[] signingKey;
+
+        /// <summary>
+        /// are we signing outgoing packets, and checking incomming packet signatures
+        /// </summary>
         public bool signing { get; set; }
+
+        /// <summary>
+        /// ignore the incomming signature
+        /// </summary>
         public bool signingignore { get; set; }
+
+        /// <summary>
+        /// mavlink 2 enable
+        /// </summary>
+        public bool mavlinkv2 = false;
 
         /// <summary>
         /// storage for whole paramater list
@@ -90,6 +113,7 @@ namespace MissionPlanner
 
         public MAVLinkMessage getPacket(uint mavlinkid)
         {
+            //log.InfoFormat("getPacket {0}", (MAVLINK_MSG_ID)mavlinkid);
             if (packets.ContainsKey(mavlinkid))
             {
                 return packets[mavlinkid];
@@ -140,11 +164,11 @@ namespace MissionPlanner
         /// <summary>
         /// used as a snapshot of what is loaded on the ap atm. - derived from the stream
         /// </summary>
-        public Dictionary<int, mavlink_mission_item_t> wps = new Dictionary<int, mavlink_mission_item_t>();
+        public ConcurrentDictionary<int, mavlink_mission_item_t> wps = new ConcurrentDictionary<int, mavlink_mission_item_t>();
 
-        public Dictionary<int, mavlink_rally_point_t> rallypoints = new Dictionary<int, mavlink_rally_point_t>();
+        public ConcurrentDictionary<int, mavlink_rally_point_t> rallypoints = new ConcurrentDictionary<int, mavlink_rally_point_t>();
 
-        public Dictionary<int, mavlink_fence_point_t> fencepoints = new Dictionary<int, mavlink_fence_point_t>();
+        public ConcurrentDictionary<int, mavlink_fence_point_t> fencepoints = new ConcurrentDictionary<int, mavlink_fence_point_t>();
 
         public List<mavlink_camera_feedback_t> camerapoints = new List<mavlink_camera_feedback_t>();
 

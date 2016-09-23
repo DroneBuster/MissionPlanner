@@ -108,6 +108,7 @@
             this.Controls.Add(this.cmb_Connection);
             this.Controls.Add(this.cmb_ConnectionType);
             this.Controls.Add(this.cmb_Baud);
+            this.MinimumSize = new System.Drawing.Size(230, 54);
             this.Name = "ConnectionControl";
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ConnectionControl_MouseClick);
             this.ResumeLayout(false);
@@ -121,6 +122,6 @@
         private System.Windows.Forms.ComboBox cmb_ConnectionType;
         private System.Windows.Forms.ComboBox cmb_Connection;
         private System.Windows.Forms.LinkLabel linkLabel1;
-        private System.Windows.Forms.ComboBox cmb_sysid;
+        public System.Windows.Forms.ComboBox cmb_sysid;
     }
 }

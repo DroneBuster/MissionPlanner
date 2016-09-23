@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using IronPython.Hosting;
 using System.IO;
+using System.Windows.Forms;
 using MissionPlanner;
+using MissionPlanner.Utilities;
 
 namespace MissionPlanner
 {
@@ -27,6 +29,11 @@ namespace MissionPlanner
                 engine.Runtime.Shutdown();
 
             engine = Python.CreateEngine(options);
+
+            var paths = engine.GetSearchPaths();
+            paths.Add(Settings.GetRunningDirectory() + "Lib.zip");
+            engine.SetSearchPaths(paths);
+
             scope = engine.CreateScope();
 
             var all = System.Reflection.Assembly.GetExecutingAssembly();
@@ -191,9 +198,9 @@ namespace MissionPlanner
 
             if (sendnow)
             {
-                MainV2.comPort.sendPacket(rc);
+                MainV2.comPort.sendPacket(rc, rc.target_system,rc.target_component);
                 System.Threading.Thread.Sleep(20);
-                MainV2.comPort.sendPacket(rc);
+                MainV2.comPort.sendPacket(rc, rc.target_system, rc.target_component);
             }
 
             return true;

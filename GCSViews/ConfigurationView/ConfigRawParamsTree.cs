@@ -186,9 +186,22 @@ namespace MissionPlanner.GCSViews.ConfigurationView
             if (Common.MessageShowAgain("Write Raw Params Tree", "Are you Sure?") != DialogResult.OK)
                 return;
 
-            var temp = (Hashtable) _changes.Clone();
+            // sort with enable at the bottom - this ensures params are set before the function is disabled
+            var temp = new List<string>();
+            foreach (var item in _changes.Keys)
+            {
+                temp.Add((string)item);
+            }
 
-            foreach (string value in temp.Keys)
+            temp.Sort((a, b) =>
+            {
+                if (a == null || b == null) return 0;
+                if (a.EndsWith("ENABLE")) return 1;
+                if (a.EndsWith("ENABLE") && b.EndsWith("ENABLE")) return 0;
+                return -1;
+            });
+
+            foreach (string value in temp)
             {
                 try
                 {
@@ -237,7 +250,7 @@ namespace MissionPlanner.GCSViews.ConfigurationView
             if (!MainV2.comPort.BaseStream.IsOpen)
                 return;
 
-            if (DialogResult.OK ==
+            if (!MainV2.comPort.MAV.cs.armed || DialogResult.OK ==
                 CustomMessageBox.Show(Strings.WarningUpdateParamList, Strings.ERROR, MessageBoxButtons.OKCancel))
             {
                 ((Control) sender).Enabled = false;
@@ -425,7 +438,7 @@ namespace MissionPlanner.GCSViews.ConfigurationView
 
         private void BUT_paramfileload_Click(object sender, EventArgs e)
         {
-            var filepath = Application.StartupPath + Path.DirectorySeparatorChar + CMB_paramfiles.Text;
+            var filepath = Settings.GetUserDataDirectory() + CMB_paramfiles.Text;
 
             try
             {
@@ -492,7 +505,7 @@ namespace MissionPlanner.GCSViews.ConfigurationView
                 {
                     MainV2.comPort.setParam(new[] {"FORMAT_VERSION", "SYSID_SW_MREV"}, 0);
                     Thread.Sleep(1000);
-                    MainV2.comPort.doReboot(false);
+                    MainV2.comPort.doReboot(false, true);
                     MainV2.comPort.BaseStream.Close();
 
                     CustomMessageBox.Show(
