@@ -3657,14 +3657,19 @@ namespace MissionPlanner.GCSViews
                     {
                         lock (thisLock)
                         {
-                            MainMap.Position = new PointLatLng(center.Position.Lat + latdif,
-                                center.Position.Lng + lngdif);
+                            if (!isMouseClickOffMenu)
+                                MainMap.Position = new PointLatLng(center.Position.Lat + latdif,
+                                    center.Position.Lng + lngdif);
                         }
                     }
                     catch
                     {
                     }
                 }
+            }
+            else if (e.Button == MouseButtons.None)
+            {
+                isMouseDown = false;
             }
         }
 
@@ -4380,7 +4385,7 @@ namespace MissionPlanner.GCSViews
         {
             try
             {
-                if (isMouseDown)
+                if (isMouseDown || CurentRectMarker != null)
                     return;
 
                 routesoverlay.Markers.Clear();
@@ -4484,8 +4489,9 @@ namespace MissionPlanner.GCSViews
         private void GeoFenceuploadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             polygongridmode = false;
-            //FENCE_TOTAL
-            if (MainV2.comPort.MAV.param["FENCE_ENABLE"] == null)
+            //FENCE_ENABLE ON COPTER
+            //FENCE_ACTION ON PLANE
+            if (!MainV2.comPort.MAV.param.ContainsKey("FENCE_ENABLE") && !MainV2.comPort.MAV.param.ContainsKey("FENCE_ACTION"))
             {
                 CustomMessageBox.Show("Not Supported");
                 return;
@@ -5200,7 +5206,7 @@ namespace MissionPlanner.GCSViews
 
                 maxzoom = Math.Min(maxzoom, MainMap.MaxZoom);
 
-                for (int i = 1; i <= MainMap.MaxZoom; i++)
+                for (int i = 1; i <= maxzoom; i++)
                 {
                     TilePrefetcher obj = new TilePrefetcher();
                     ThemeManager.ApplyThemeTo(obj);
@@ -5750,7 +5756,7 @@ namespace MissionPlanner.GCSViews
 
         private void contextMenuStrip1_Closed(object sender, ToolStripDropDownClosedEventArgs e)
         {
-            if (e.CloseReason.ToString() == "AppClicked")
+            if (e.CloseReason.ToString() == "AppClicked" || e.CloseReason.ToString() == "AppFocusChange")
                 isMouseClickOffMenu = true;
         }
 
