@@ -8,8 +8,8 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FlightData));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             this.MainH = new System.Windows.Forms.SplitContainer();
             this.SubMainLeft = new System.Windows.Forms.SplitContainer();
             this.hud1 = new MissionPlanner.Controls.HUD();
@@ -127,31 +127,6 @@
             this.BUT_select_script = new MissionPlanner.Controls.MyButton();
             this.tabPagemessages = new System.Windows.Forms.TabPage();
             this.txt_messagebox = new System.Windows.Forms.TextBox();
-            this.tabActionsOT = new System.Windows.Forms.TabPage();
-            this.myButton4 = new MissionPlanner.Controls.MyButton();
-            this.myButton5 = new MissionPlanner.Controls.MyButton();
-            this.modifyandSet1 = new MissionPlanner.Controls.ModifyandSet();
-            this.myButton6 = new MissionPlanner.Controls.MyButton();
-            this.myButton7 = new MissionPlanner.Controls.MyButton();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.myButton8 = new MissionPlanner.Controls.MyButton();
-            this.modifyandSet2 = new MissionPlanner.Controls.ModifyandSet();
-            this.modifyandSet3 = new MissionPlanner.Controls.ModifyandSet();
-            this.myButton9 = new MissionPlanner.Controls.MyButton();
-            this.myButton10 = new MissionPlanner.Controls.MyButton();
-            this.myButton11 = new MissionPlanner.Controls.MyButton();
-            this.myButton12 = new MissionPlanner.Controls.MyButton();
-            this.myButton13 = new MissionPlanner.Controls.MyButton();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.myButton14 = new MissionPlanner.Controls.MyButton();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
-            this.myButton15 = new MissionPlanner.Controls.MyButton();
-            this.myButton16 = new MissionPlanner.Controls.MyButton();
-            this.comboBox4 = new System.Windows.Forms.ComboBox();
-            this.myButton17 = new MissionPlanner.Controls.MyButton();
-            this.myButton18 = new MissionPlanner.Controls.MyButton();
-            this.myButton19 = new MissionPlanner.Controls.MyButton();
-            this.myButton20 = new MissionPlanner.Controls.MyButton();
             this.tabGroundCtrl = new System.Windows.Forms.TabPage();
             this.para_reset = new MissionPlanner.Controls.MyButton();
             this.ign_off = new MissionPlanner.Controls.MyButton();
@@ -230,7 +205,6 @@
             this.tablogbrowse.SuspendLayout();
             this.tabScripts.SuspendLayout();
             this.tabPagemessages.SuspendLayout();
-            this.tabActionsOT.SuspendLayout();
             this.tabGroundCtrl.SuspendLayout();
             this.tableMap.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -361,7 +335,6 @@
             this.hud1.vibex = 0F;
             this.hud1.vibey = 0F;
             this.hud1.vibez = 0F;
-            this.hud1.VSync = false;
             this.hud1.wpno = 0;
             this.hud1.xtrack_error = 0F;
             this.hud1.ekfclick += new System.EventHandler(this.hud1_ekfclick);
@@ -457,7 +430,6 @@
             this.tabControlactions.Controls.Add(this.tablogbrowse);
             this.tabControlactions.Controls.Add(this.tabScripts);
             this.tabControlactions.Controls.Add(this.tabPagemessages);
-            this.tabControlactions.Controls.Add(this.tabActionsOT);
             this.tabControlactions.Controls.Add(this.tabGroundCtrl);
             resources.ApplyResources(this.tabControlactions, "tabControlactions");
             this.tabControlactions.Name = "tabControlactions";
@@ -1743,248 +1715,6 @@
             resources.ApplyResources(this.txt_messagebox, "txt_messagebox");
             this.txt_messagebox.Name = "txt_messagebox";
             // 
-            // tabActionsOT
-            // 
-            resources.ApplyResources(this.tabActionsOT, "tabActionsOT");
-            this.tabActionsOT.Controls.Add(this.myButton4);
-            this.tabActionsOT.Controls.Add(this.myButton5);
-            this.tabActionsOT.Controls.Add(this.modifyandSet1);
-            this.tabActionsOT.Controls.Add(this.myButton6);
-            this.tabActionsOT.Controls.Add(this.myButton7);
-            this.tabActionsOT.Controls.Add(this.comboBox1);
-            this.tabActionsOT.Controls.Add(this.myButton8);
-            this.tabActionsOT.Controls.Add(this.modifyandSet2);
-            this.tabActionsOT.Controls.Add(this.modifyandSet3);
-            this.tabActionsOT.Controls.Add(this.myButton9);
-            this.tabActionsOT.Controls.Add(this.myButton10);
-            this.tabActionsOT.Controls.Add(this.myButton11);
-            this.tabActionsOT.Controls.Add(this.myButton12);
-            this.tabActionsOT.Controls.Add(this.myButton13);
-            this.tabActionsOT.Controls.Add(this.comboBox2);
-            this.tabActionsOT.Controls.Add(this.myButton14);
-            this.tabActionsOT.Controls.Add(this.comboBox3);
-            this.tabActionsOT.Controls.Add(this.myButton15);
-            this.tabActionsOT.Controls.Add(this.myButton16);
-            this.tabActionsOT.Controls.Add(this.comboBox4);
-            this.tabActionsOT.Controls.Add(this.myButton17);
-            this.tabActionsOT.Controls.Add(this.myButton18);
-            this.tabActionsOT.Controls.Add(this.myButton19);
-            this.tabActionsOT.Controls.Add(this.myButton20);
-            this.tabActionsOT.Name = "tabActionsOT";
-            this.tabActionsOT.UseVisualStyleBackColor = true;
-            // 
-            // myButton4
-            // 
-            resources.ApplyResources(this.myButton4, "myButton4");
-            this.myButton4.Name = "myButton4";
-            this.toolTip1.SetToolTip(this.myButton4, resources.GetString("myButton4.ToolTip"));
-            this.myButton4.UseVisualStyleBackColor = true;
-            // 
-            // myButton5
-            // 
-            resources.ApplyResources(this.myButton5, "myButton5");
-            this.myButton5.Name = "myButton5";
-            this.toolTip1.SetToolTip(this.myButton5, resources.GetString("myButton5.ToolTip"));
-            this.myButton5.UseVisualStyleBackColor = true;
-            // 
-            // modifyandSet1
-            // 
-            this.modifyandSet1.ButtonText = "Set Loiter Rad";
-            resources.ApplyResources(this.modifyandSet1, "modifyandSet1");
-            this.modifyandSet1.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.modifyandSet1.Minimum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            -2147483648});
-            this.modifyandSet1.Name = "modifyandSet1";
-            this.modifyandSet1.Value = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            // 
-            // myButton6
-            // 
-            resources.ApplyResources(this.myButton6, "myButton6");
-            this.myButton6.Name = "myButton6";
-            this.toolTip1.SetToolTip(this.myButton6, resources.GetString("myButton6.ToolTip"));
-            this.myButton6.UseVisualStyleBackColor = true;
-            // 
-            // myButton7
-            // 
-            resources.ApplyResources(this.myButton7, "myButton7");
-            this.myButton7.Name = "myButton7";
-            this.myButton7.UseVisualStyleBackColor = true;
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            resources.ApplyResources(this.comboBox1, "comboBox1");
-            this.comboBox1.Name = "comboBox1";
-            // 
-            // myButton8
-            // 
-            resources.ApplyResources(this.myButton8, "myButton8");
-            this.myButton8.Name = "myButton8";
-            this.toolTip1.SetToolTip(this.myButton8, resources.GetString("myButton8.ToolTip"));
-            this.myButton8.UseVisualStyleBackColor = true;
-            // 
-            // modifyandSet2
-            // 
-            this.modifyandSet2.ButtonText = "Change Speed";
-            resources.ApplyResources(this.modifyandSet2, "modifyandSet2");
-            this.modifyandSet2.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.modifyandSet2.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.modifyandSet2.Name = "modifyandSet2";
-            this.modifyandSet2.Value = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            // 
-            // modifyandSet3
-            // 
-            this.modifyandSet3.ButtonText = "Change Alt";
-            resources.ApplyResources(this.modifyandSet3, "modifyandSet3");
-            this.modifyandSet3.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.modifyandSet3.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.modifyandSet3.Name = "modifyandSet3";
-            this.modifyandSet3.Value = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            // 
-            // myButton9
-            // 
-            resources.ApplyResources(this.myButton9, "myButton9");
-            this.myButton9.Name = "myButton9";
-            this.toolTip1.SetToolTip(this.myButton9, resources.GetString("myButton9.ToolTip"));
-            this.myButton9.UseVisualStyleBackColor = true;
-            // 
-            // myButton10
-            // 
-            resources.ApplyResources(this.myButton10, "myButton10");
-            this.myButton10.Name = "myButton10";
-            this.toolTip1.SetToolTip(this.myButton10, resources.GetString("myButton10.ToolTip"));
-            this.myButton10.UseVisualStyleBackColor = true;
-            // 
-            // myButton11
-            // 
-            resources.ApplyResources(this.myButton11, "myButton11");
-            this.myButton11.Name = "myButton11";
-            this.toolTip1.SetToolTip(this.myButton11, resources.GetString("myButton11.ToolTip"));
-            this.myButton11.UseVisualStyleBackColor = true;
-            // 
-            // myButton12
-            // 
-            resources.ApplyResources(this.myButton12, "myButton12");
-            this.myButton12.Name = "myButton12";
-            this.toolTip1.SetToolTip(this.myButton12, resources.GetString("myButton12.ToolTip"));
-            this.myButton12.UseVisualStyleBackColor = true;
-            // 
-            // myButton13
-            // 
-            resources.ApplyResources(this.myButton13, "myButton13");
-            this.myButton13.Name = "myButton13";
-            this.toolTip1.SetToolTip(this.myButton13, resources.GetString("myButton13.ToolTip"));
-            this.myButton13.UseVisualStyleBackColor = true;
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Items.AddRange(new object[] {
-            resources.GetString("comboBox2.Items")});
-            resources.ApplyResources(this.comboBox2, "comboBox2");
-            this.comboBox2.Name = "comboBox2";
-            // 
-            // myButton14
-            // 
-            resources.ApplyResources(this.myButton14, "myButton14");
-            this.myButton14.Name = "myButton14";
-            this.toolTip1.SetToolTip(this.myButton14, resources.GetString("myButton14.ToolTip"));
-            this.myButton14.UseVisualStyleBackColor = true;
-            // 
-            // comboBox3
-            // 
-            this.comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox3.FormattingEnabled = true;
-            resources.ApplyResources(this.comboBox3, "comboBox3");
-            this.comboBox3.Name = "comboBox3";
-            // 
-            // myButton15
-            // 
-            resources.ApplyResources(this.myButton15, "myButton15");
-            this.myButton15.Name = "myButton15";
-            this.toolTip1.SetToolTip(this.myButton15, resources.GetString("myButton15.ToolTip"));
-            this.myButton15.UseVisualStyleBackColor = true;
-            // 
-            // myButton16
-            // 
-            resources.ApplyResources(this.myButton16, "myButton16");
-            this.myButton16.Name = "myButton16";
-            this.toolTip1.SetToolTip(this.myButton16, resources.GetString("myButton16.ToolTip"));
-            this.myButton16.UseVisualStyleBackColor = true;
-            // 
-            // comboBox4
-            // 
-            this.comboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox4.DropDownWidth = 150;
-            this.comboBox4.FormattingEnabled = true;
-            resources.ApplyResources(this.comboBox4, "comboBox4");
-            this.comboBox4.Name = "comboBox4";
-            // 
-            // myButton17
-            // 
-            resources.ApplyResources(this.myButton17, "myButton17");
-            this.myButton17.Name = "myButton17";
-            this.toolTip1.SetToolTip(this.myButton17, resources.GetString("myButton17.ToolTip"));
-            this.myButton17.UseVisualStyleBackColor = true;
-            // 
-            // myButton18
-            // 
-            resources.ApplyResources(this.myButton18, "myButton18");
-            this.myButton18.Name = "myButton18";
-            this.toolTip1.SetToolTip(this.myButton18, resources.GetString("myButton18.ToolTip"));
-            this.myButton18.UseVisualStyleBackColor = true;
-            // 
-            // myButton19
-            // 
-            resources.ApplyResources(this.myButton19, "myButton19");
-            this.myButton19.Name = "myButton19";
-            this.toolTip1.SetToolTip(this.myButton19, resources.GetString("myButton19.ToolTip"));
-            this.myButton19.UseVisualStyleBackColor = true;
-            // 
-            // myButton20
-            // 
-            resources.ApplyResources(this.myButton20, "myButton20");
-            this.myButton20.Name = "myButton20";
-            this.toolTip1.SetToolTip(this.myButton20, resources.GetString("myButton20.ToolTip"));
-            this.myButton20.UseVisualStyleBackColor = true;
-            // 
             // tabGroundCtrl
             // 
             this.tabGroundCtrl.Controls.Add(this.para_reset);
@@ -2199,7 +1929,7 @@
             this.windDir1.BackColor = System.Drawing.Color.Transparent;
             this.windDir1.DataBindings.Add(new System.Windows.Forms.Binding("Direction", this.bindingSource1, "wind_dir", true, System.Windows.Forms.DataSourceUpdateMode.Never));
             this.windDir1.DataBindings.Add(new System.Windows.Forms.Binding("Speed", this.bindingSource1, "wind_vel", true, System.Windows.Forms.DataSourceUpdateMode.Never));
-            this.windDir1.Direction = 180D;
+            this.windDir1.Direction = 360D;
             resources.ApplyResources(this.windDir1, "windDir1");
             this.windDir1.Name = "windDir1";
             this.windDir1.Speed = 0D;
@@ -2387,8 +2117,8 @@
             // 
             // dataGridViewImageColumn1
             // 
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewImageColumn1.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewImageColumn1.DefaultCellStyle = dataGridViewCellStyle11;
             resources.ApplyResources(this.dataGridViewImageColumn1, "dataGridViewImageColumn1");
             this.dataGridViewImageColumn1.Image = global::MissionPlanner.Properties.Resources.up;
             this.dataGridViewImageColumn1.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Stretch;
@@ -2396,8 +2126,8 @@
             // 
             // dataGridViewImageColumn2
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewImageColumn2.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewImageColumn2.DefaultCellStyle = dataGridViewCellStyle12;
             resources.ApplyResources(this.dataGridViewImageColumn2, "dataGridViewImageColumn2");
             this.dataGridViewImageColumn2.Image = global::MissionPlanner.Properties.Resources.down;
             this.dataGridViewImageColumn2.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Stretch;
@@ -2456,7 +2186,6 @@
             this.tabScripts.PerformLayout();
             this.tabPagemessages.ResumeLayout(false);
             this.tabPagemessages.PerformLayout();
-            this.tabActionsOT.ResumeLayout(false);
             this.tabGroundCtrl.ResumeLayout(false);
             this.tableMap.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -2632,31 +2361,6 @@
         private System.Windows.Forms.ToolStripMenuItem onOffCameraOverlapToolStripMenuItem;
         private Controls.MyButton BUT_camon;
         private Controls.MyButton BUT_camoff;
-        private System.Windows.Forms.TabPage tabActionsOT;
-        private Controls.MyButton myButton4;
-        private Controls.MyButton myButton5;
-        private Controls.ModifyandSet modifyandSet1;
-        private Controls.MyButton myButton6;
-        private Controls.MyButton myButton7;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private Controls.MyButton myButton8;
-        private Controls.ModifyandSet modifyandSet2;
-        private Controls.ModifyandSet modifyandSet3;
-        private Controls.MyButton myButton9;
-        private Controls.MyButton myButton10;
-        private Controls.MyButton myButton11;
-        private Controls.MyButton myButton12;
-        private Controls.MyButton myButton13;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private Controls.MyButton myButton14;
-        private System.Windows.Forms.ComboBox comboBox3;
-        private Controls.MyButton myButton15;
-        private Controls.MyButton myButton16;
-        private System.Windows.Forms.ComboBox comboBox4;
-        private Controls.MyButton myButton17;
-        private Controls.MyButton myButton18;
-        private Controls.MyButton myButton19;
-        private Controls.MyButton myButton20;
         private System.Windows.Forms.TabPage tabGroundCtrl;
         private Controls.MyButton para_reset;
         private Controls.MyButton ign_off;
