@@ -37,3 +37,5 @@ obj/
 /appxkey.cer
 /ExtLibs/Portable/Portable
 /ExtLibs/AltitudeAngelWings/Keys.config
+/MissionPlannerBeta.zip
+*.vspx

@@ -55,7 +55,7 @@ namespace MissionPlanner
             static public int SW_HIDE = 0;
         }
 
-        static menuicons displayicons = new menuicons1();
+        public static menuicons displayicons = new burntkermitmenuicons();
 
         public abstract class menuicons
         {
@@ -70,9 +70,10 @@ namespace MissionPlanner
             public abstract Image connect { get; }
             public abstract Image disconnect { get; }
             public abstract Image bg { get; }
+            public abstract Image wizard { get; }
         }
 
-        public class menuicons1 : menuicons
+        public class burntkermitmenuicons : menuicons
         {
             public override Image fd
             {
@@ -128,9 +129,13 @@ namespace MissionPlanner
             {
                 get { return global::MissionPlanner.Properties.Resources.bgdark; }
             }
+            public override Image wizard
+            {
+                get { return global::MissionPlanner.Properties.Resources.wizardicon; }
+            }
         }
 
-        public class menuicons2 : menuicons
+        public class highcontrastmenuicons : menuicons
         {
             public override Image fd
             {
@@ -186,28 +191,30 @@ namespace MissionPlanner
             {
                 get { return null; }
             }
+            public override Image wizard
+            {
+                get { return global::MissionPlanner.Properties.Resources.wizardicon; }
+            }
         }
 
         Controls.MainSwitcher MyView;
 
-        static bool _advanced = false;
+        private static DisplayView _displayConfiguration = new DisplayView().Basic();
 
-        /// <summary>
-        /// Control what is displayed
-        /// </summary>
-        public static Boolean Advanced
+        public static event EventHandler LayoutChanged;
+
+        public static DisplayView DisplayConfiguration
         {
-            get { return _advanced; }
+            get { return _displayConfiguration; }
             set
             {
-                _advanced = value;
-                MissionPlanner.Controls.BackstageView.BackstageView.Advanced = value;
-
-                if (AdvancedChanged != null)
-                    AdvancedChanged(null, EventArgs.Empty);
+                _displayConfiguration = value;
+                if (LayoutChanged != null)
+                    LayoutChanged(null, EventArgs.Empty);
             }
         }
 
+        
         public static bool ShowAirports { get; set; }
         public static bool ShowTFR { get; set; }
 
@@ -235,7 +242,7 @@ namespace MissionPlanner
             }
         }
 
-        public static event EventHandler AdvancedChanged;
+        //public static event EventHandler LayoutChanged;
 
         /// <summary>
         /// Active Comport interface
@@ -394,19 +401,62 @@ namespace MissionPlanner
         /// </summary>
         static internal ConnectionControl _connectionControl;
 
-        public void updateAdvanced(object sender, EventArgs e)
+        public static bool TerminalTheming = true;
+
+        public void updateLayout(object sender, EventArgs e)
         {
-            if (Advanced == false)
+            MenuSimulation.Visible = DisplayConfiguration.displaySimulation;
+            MenuTerminal.Visible = DisplayConfiguration.displayTerminal;
+            MenuHelp.Visible = DisplayConfiguration.displayHelp;
+            MissionPlanner.Controls.BackstageView.BackstageView.Advanced = DisplayConfiguration.isAdvancedMode;
+
+            if (MainV2.instance.FlightData != null)
             {
-                MenuTerminal.Visible = false;
-                MenuSimulation.Visible = false;
-            }
-            else
-            {
-                MenuTerminal.Visible = true;
-                MenuSimulation.Visible = true;
+                TabControl t = MainV2.instance.FlightData.tabControlactions;
+
+                if (DisplayConfiguration.displayAdvActionsTab && !t.TabPages.Contains(FlightData.tabActions))
+                {
+                    t.TabPages.Add(FlightData.tabActions);
+                }
+                else if (!DisplayConfiguration.displayAdvActionsTab && t.TabPages.Contains(FlightData.tabActions))
+                {
+                    t.TabPages.Remove(FlightData.tabActions);
+                }
+                if (DisplayConfiguration.displaySimpleActionsTab && !t.TabPages.Contains(FlightData.tabActionsSimple))
+                {
+                    t.TabPages.Add(FlightData.tabActionsSimple);
+                }
+                else if (!DisplayConfiguration.displaySimpleActionsTab && t.TabPages.Contains(FlightData.tabActionsSimple))
+                {
+                    t.TabPages.Remove(FlightData.tabActionsSimple);
+                }
+                if (DisplayConfiguration.displayStatusTab && !t.TabPages.Contains(FlightData.tabStatus))
+                {
+                    t.TabPages.Add(FlightData.tabStatus);
+                }
+                else if (!DisplayConfiguration.displayStatusTab && t.TabPages.Contains(FlightData.tabStatus))
+                {
+                    t.TabPages.Remove(FlightData.tabStatus);
+                }
+                if (DisplayConfiguration.displayServoTab && !t.TabPages.Contains(FlightData.tabServo))
+                {
+                    t.TabPages.Add(FlightData.tabServo);
+                }
+                else if (!DisplayConfiguration.displayServoTab && t.TabPages.Contains(FlightData.tabServo))
+                {
+                    t.TabPages.Remove(FlightData.tabServo);
+                }
+                if (DisplayConfiguration.displayScriptsTab && !t.TabPages.Contains(FlightData.tabScripts))
+                {
+                    t.TabPages.Add(FlightData.tabScripts);
+                }
+                else if (!DisplayConfiguration.displayScriptsTab && t.TabPages.Contains(FlightData.tabScripts))
+                {
+                    t.TabPages.Remove(FlightData.tabScripts);
+                }
             }
         }
+        
 
         public MainV2()
         {
@@ -451,15 +501,24 @@ namespace MissionPlanner
             }
 
             InitializeComponent();
-
+            try
+            {
+                if(Settings.Instance["theme"] != null)
+                    ThemeManager.SetTheme((ThemeManager.Themes)Enum.Parse(typeof(ThemeManager.Themes), Settings.Instance["theme"]));
+            }
+            catch
+            {
+            }
+            Utilities.ThemeManager.ApplyThemeTo(this);
             MyView = new MainSwitcher(this);
 
             View = MyView;
 
-            AdvancedChanged += updateAdvanced;
-
             //startup console
             TCPConsole.Write((byte) 'S');
+
+            // start listener
+            UDPVideoShim.Start();
 
             _connectionControl = toolStripConnectionControl.ConnectionControl;
             _connectionControl.CMB_baudrate.TextChanged += this.CMB_baudrate_TextChanged;
@@ -503,6 +562,7 @@ namespace MissionPlanner
             splash.Refresh();
             Application.DoEvents();
 
+            // load last saved connection settings
             string temp = Settings.Instance.ComPort;
             if (!string.IsNullOrEmpty(temp))
             {
@@ -604,7 +664,7 @@ namespace MissionPlanner
 
                 if (ThemeManager.CurrentTheme == ThemeManager.Themes.HighContrast)
                 {
-                    switchlight(new menuicons2());
+                    switchicons(new highcontrastmenuicons());
                 }
             }
 
@@ -625,26 +685,6 @@ namespace MissionPlanner
             {
                 MainV2.instance.EnableADSB = Settings.Instance.GetBoolean("enableadsb");
             }
-
-            // load this before the other screens get loaded
-            if (Settings.Instance["advancedview"] != null)
-            {
-                MainV2.Advanced = Settings.Instance.GetBoolean("advancedview");
-            }
-            else
-            {
-                // existing user - enable advanced view
-                if (Settings.Instance.Count > 3)
-                {
-                    Settings.Instance["advancedview"] = true.ToString();
-                    MainV2.Advanced = true;
-                }
-                else
-                {
-                    Settings.Instance["advancedview"] = false.ToString();
-                }
-            }
-
 
             try
             {
@@ -680,6 +720,38 @@ namespace MissionPlanner
                 CustomMessageBox.Show("A Major error has occured : " + e.ToString());
                 Application.Exit();
             }
+
+            //set first instance display configuration
+            if (DisplayConfiguration == null)
+            {
+                DisplayConfiguration = DisplayConfiguration.Basic();
+            }
+
+            // load old config
+            if (Settings.Instance["advancedview"] != null)
+            {
+                if (Settings.Instance.GetBoolean("advancedview") == true)
+                {
+                    DisplayConfiguration = new DisplayView().Advanced();
+                }
+                // remove old config
+                Settings.Instance.Remove("advancedview");
+            }            //// load this before the other screens get loaded
+            if (Settings.Instance["displayview"] != null)
+            {
+                try
+                {
+                DisplayConfiguration = Settings.Instance.GetDisplayView("displayview");
+            }
+                catch
+                {
+                    DisplayConfiguration = DisplayConfiguration.Basic();
+                    Settings.Instance["displayview"] = MainV2.DisplayConfiguration.ConvertToString();
+                }
+            }
+
+            LayoutChanged += updateLayout;
+            LayoutChanged(null, EventArgs.Empty);
 
             if (Settings.Instance["CHK_GDIPlus"] != null)
                 GCSViews.FlightData.myhud.UseOpenGL = !bool.Parse(Settings.Instance["CHK_GDIPlus"].ToString());
@@ -910,19 +982,21 @@ namespace MissionPlanner
             }
         }
 
-        void switchlight(menuicons icons)
+        public void switchicons(menuicons icons)
         {
+            // dont update if no change
+            if (displayicons.GetType() == icons.GetType())
+                return;
+
             displayicons = icons;
 
             MainMenu.BackColor = SystemColors.MenuBar;
-            
-            ThemeManager.ApplyThemeTo(MainMenu);
 
             MainMenu.BackgroundImage = displayicons.bg;
 
             MenuFlightData.Image = displayicons.fd;
             MenuFlightPlanner.Image = displayicons.fp;
-            MenuInitConfig.Image = displayicons.config_tuning;
+            MenuInitConfig.Image = displayicons.initsetup;
             MenuSimulation.Image = displayicons.sim;
             MenuConfigTune.Image = displayicons.config_tuning;
             MenuTerminal.Image = displayicons.terminal;
@@ -1595,6 +1669,7 @@ namespace MissionPlanner
             Settings.Instance["MainLocX"] = this.Location.X.ToString();
             Settings.Instance["MainLocY"] = this.Location.Y.ToString();
 
+            // close bases connection
             try
             {
                 comPort.logreadmode = false;
@@ -1609,6 +1684,26 @@ namespace MissionPlanner
             }
             catch
             {
+            }
+
+            // close all connections
+            foreach (var port in Comports)
+            {
+                try
+                {
+                    port.logreadmode = false;
+                    if (port.logfile != null)
+                        port.logfile.Close();
+
+                    if (port.rawlogfile != null)
+                        port.rawlogfile.Close();
+
+                    port.logfile = null;
+                    port.rawlogfile = null;
+                }
+                catch
+                {
+                }
             }
 
             Utilities.adsb.Stop();
@@ -2213,7 +2308,7 @@ namespace MissionPlanner
                             MainV2.comPort.MAV.cs.linkqualitygcs = (ushort) (MainV2.comPort.MAV.cs.linkqualitygcs*0.8f);
                             linkqualitytime = DateTime.Now;
 
-                            // force redraw is no other packets are being read
+                            // force redraw if there are no other packets are being read
                             GCSViews.FlightData.myhud.Invalidate();
                         }
                     }
@@ -2410,6 +2505,7 @@ namespace MissionPlanner
 
                             // modify array and drop out
                             Comports.Remove(port);
+                            port.Dispose();
                             break;
                         }
 
@@ -2579,6 +2675,7 @@ namespace MissionPlanner
             {
                 new Utilities.AltitudeAngel.AltitudeAngel();
 
+                /*
                 // setup as a prompt once dialog
                 if (!Settings.Instance.GetBoolean("AACheck"))
                 {
@@ -2591,6 +2688,7 @@ namespace MissionPlanner
 
                     Settings.Instance["AACheck"] = true.ToString();
                 }
+                */
             }
             catch (TypeInitializationException) // windows xp lacking patch level
             {
@@ -2743,6 +2841,8 @@ namespace MissionPlanner
             try
             {
                 MissionPlanner.Log.LogSort.SortLogs(Directory.GetFiles(Settings.Instance.LogDir, "*.tlog"));
+
+                MissionPlanner.Log.LogSort.SortLogs(Directory.GetFiles(Settings.Instance.LogDir, "*.rlog"));
             }
             catch (Exception ex)
             {
@@ -2785,6 +2885,9 @@ namespace MissionPlanner
 
         private void checkupdate(object stuff)
         {
+            if (Program.WindowsStoreApp)
+                return;
+
             try
             {
                 MissionPlanner.Utilities.Update.CheckForUpdate();
@@ -3264,8 +3367,19 @@ namespace MissionPlanner
                     }
 
                     break;
-                default:
+                case 0x86: // WM_NCACTIVATE
+                    //var thing = Control.FromHandle(m.HWnd);
 
+                    var child = Control.FromHandle(m.LParam);
+
+                    if (child is Form)
+                    {
+                        log.Debug("ApplyThemeTo " + child.Name);
+                        ThemeManager.ApplyThemeTo(child);
+                    }
+                    break;
+                default:
+                    //Console.WriteLine(m.ToString());
                     break;
             }
             base.WndProc(ref m);

@@ -1061,7 +1061,7 @@ namespace MissionPlanner.Log
                             System.Globalization.CultureInfo.InvariantCulture);
 
                         // abandon realy bad data
-                        if (Math.Abs(value) > 3.15e8)
+                        if (Math.Abs(value) > 9.15e8)
                         {
                             a++;
                             continue;
@@ -2438,6 +2438,23 @@ namespace MissionPlanner.Log
                 zg1.GraphPane.XAxis.Title.Text = "Line Number";
                 zg1.GraphPane.YAxis.Title.Text = "Output";
             }
+        }
+
+        double prevMouseX = 0;
+        double prevMouseY = 0;
+
+        private bool zg1_MouseMoveEvent(ZedGraphControl sender, MouseEventArgs e)
+        {
+            // debounce for mousemove and tooltip label
+
+            if (e.X == prevMouseX && e.Y == prevMouseY)
+                return true;
+
+            prevMouseX = e.X;
+            prevMouseY = e.Y;
+
+            // not handled
+            return false;
         }
     }
 }

@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections;
-using netDxf;
 using netDxf.Entities;
 using netDxf.Tables;
-using netDxf.Header;
 using System.Reflection;
 using log4net;
-using MissionPlanner.HIL;
-using MissionPlanner.Controls;
 using MissionPlanner.Log;
+using MissionPlanner.Controls;
 using MissionPlanner.Utilities;
+using MissionPlanner.HIL;
 
 namespace MissionPlanner
 {
@@ -424,7 +420,6 @@ namespace MissionPlanner
                 // run lsq every second when more than 100 datapoints
                 if (datacompass1.Count > 100 && lastlsq.Second != DateTime.Now.Second)
                 {
-                    MainV2.comPort.requestDatastream(MAVLink.MAV_DATA_STREAM.ALL, 0);
                     MainV2.comPort.requestDatastream(MAVLink.MAV_DATA_STREAM.RAW_SENSORS, 50);
 
                     lastlsq = DateTime.Now;
@@ -706,8 +701,8 @@ namespace MissionPlanner
         public static double[] getOffsetsLog(string fn)
         {
             // this is for a dxf
-            Polyline3dVertex vertex;
-            List<Polyline3dVertex> vertexes = new List<Polyline3dVertex>();
+            PolylineVertex vertex;
+            List<PolylineVertex> vertexes = new List<PolylineVertex>();
 
             List<Tuple<float, float, float>> data = new List<Tuple<float, float, float>>();
 
@@ -759,7 +754,7 @@ namespace MissionPlanner
                             ofsDoubles[2] = offsetz;
 
                             // fox dxf
-                            vertex = new Polyline3dVertex(new Vector3f(magx - offsetx,
+                            vertex = new PolylineVertex(new netDxf.Vector3(magx - offsetx,
                                 magy - offsety,
                                 magz - offsetz)
                                 );
@@ -844,8 +839,8 @@ namespace MissionPlanner
             float maxz = 0;
 
             // this is for a dxf
-            Polyline3dVertex vertex;
-            List<Polyline3dVertex> vertexes = new List<Polyline3dVertex>();
+            PolylineVertex vertex;
+            List<PolylineVertex> vertexes = new List<PolylineVertex>();
 
             // data storage
             Tuple<float, float, float> offset = new Tuple<float, float, float>(0, 0, 0);
@@ -912,7 +907,7 @@ namespace MissionPlanner
                         int div = 20;
 
                         // fox dxf
-                        vertex = new Polyline3dVertex(new Vector3f(
+                        vertex = new PolylineVertex(new netDxf.Vector3(
                             ((MAVLink.mavlink_raw_imu_t) packet).xmag - offset.Item1,
                             ((MAVLink.mavlink_raw_imu_t) packet).ymag - offset.Item2,
                             ((MAVLink.mavlink_raw_imu_t) packet).zmag - offset.Item3)
@@ -995,22 +990,22 @@ namespace MissionPlanner
             return x;
         }
 
-        static void doDXF(List<Polyline3dVertex> vertexes, double[] x)
+        static void doDXF(List<PolylineVertex> vertexes, double[] x)
         {
             // create a dxf for those who want to "see" the calibration
-            DxfDocument dxf = new DxfDocument();
+            netDxf.DxfDocument dxf = new netDxf.DxfDocument();
 
-            Polyline3d polyline = new Polyline3d(vertexes, true);
-            polyline.Layer = new Layer("polyline3d");
+            Polyline polyline = new Polyline(vertexes, true);
+            polyline.Layer = new Layer("polyline");
             polyline.Layer.Color.Index = 24;
             dxf.AddEntity(polyline);
 
-            var pnt = new Point(new Vector3f(-(float) x[0], -(float) x[1], -(float) x[2]));
+            var pnt = new Point(new netDxf.Vector3(-(float) x[0], -(float) x[1], -(float) x[2]));
             pnt.Layer = new Layer("new offset");
             pnt.Layer.Color.Index = 21;
             dxf.AddEntity(pnt);
 
-            dxf.Save(Settings.GetUserDataDirectory() + "magoffset.dxf", DxfVersion.AutoCad2000);
+            dxf.Save(Settings.GetUserDataDirectory() + "magoffset.dxf");
 
             log.Info("dxf Done " + DateTime.Now);
         }
@@ -1162,6 +1157,13 @@ namespace MissionPlanner
                     if (ofs.Length > 3)
                     {
                         // ellipsoid
+                        MainV2.comPort.setParam("COMPASS_DIA_X", (float)ofs[3]);
+                        MainV2.comPort.setParam("COMPASS_DIA_Y", (float)ofs[4]);
+                        MainV2.comPort.setParam("COMPASS_DIA_Z", (float)ofs[5]);
+
+                        MainV2.comPort.setParam("COMPASS_ODI_X", (float)ofs[6]);
+                        MainV2.comPort.setParam("COMPASS_ODI_Y", (float)ofs[7]);
+                        MainV2.comPort.setParam("COMPASS_ODI_Z", (float)ofs[8]);
                     }
                 }
                 catch

@@ -92,6 +92,7 @@ namespace MissionPlanner.Controls
         {
             if (this.DesignMode)
             {
+                VSync = true;
                 opengl = false;
                 //return;
             }
@@ -103,6 +104,8 @@ namespace MissionPlanner.Controls
                             displayalt =
                                 displayconninfo =
                                     displayxtrack = displayrollpitch = displaygps = bgon = hudon = batteryon = true;
+
+            UseOpenGL = true;
 
             this.Name = "Hud";
 
@@ -1692,6 +1695,14 @@ namespace MissionPlanner.Controls
                     {
                         gps = (HUDT.GPS5);
                     }
+                    else if (_fix == 6)
+                    {
+                        gps = (HUDT.GPS6);
+                    }
+                    else
+                    {
+                        gps = _fix.ToString();
+                    }
                     drawstring(graphicsObject, gps, font, fontsize + 2, col, this.Width - 13 * fontsize, this.Height - 30 - fontoffset);
                 }
 
@@ -2206,5 +2217,12 @@ namespace MissionPlanner.Controls
         }
 
         public bool UseOpenGL { get; set; }
+
+        [Browsable(false)]
+        public new bool VSync
+        {
+            get { return base.VSync; }
+            set { base.VSync = value; }
+        }
     }
 }

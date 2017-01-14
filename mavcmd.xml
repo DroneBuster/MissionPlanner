@@ -93,6 +93,15 @@
       <Y></Y>
       <Z></Z>
     </GUIDED_ENABLE>
+    <PAYLOAD_PLACE>
+      <P1>max descent</P1>
+      <P2></P2>
+      <P3></P3>
+      <P4></P4>
+      <X>Lat</X>
+      <Y>Long</Y>
+      <Z>Alt</Z>
+    </PAYLOAD_PLACE>
     <DO_GUIDED_LIMITS>
       <P1>timeout S</P1>
       <P2>min alt</P2>
@@ -279,7 +288,7 @@
     </LOITER_UNLIM>
     <LOITER_TURNS>
       <P1>Turns</P1>
-      <P2>Heading req</P2>
+      <P2></P2>
       <P3>Radius</P3>
       <P4>1=Exit Tangent</P4>
       <X>Lat</X>
@@ -288,7 +297,7 @@
     </LOITER_TURNS>
     <LOITER_TIME>
       <P1>Time s</P1>
-      <P2>Heading req</P2>
+      <P2></P2>
       <P3>Dir 1=CW</P3>
       <P4>1=Exit Tangent</P4>
       <X>Lat</X>
@@ -296,7 +305,7 @@
       <Z>Alt</Z>
     </LOITER_TIME>
     <LOITER_TO_ALT>
-      <P1>Heading req</P1>
+      <P1></P1>
       <P2>Radius</P2>
       <P3></P3>
       <P4>1=Exit Tangent</P4>

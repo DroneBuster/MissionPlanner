@@ -328,10 +328,6 @@ namespace MissionPlanner.GCSViews
 
             MainV2.comPort.ParamListChanged += FlightData_ParentChanged;
 
-            MainV2.AdvancedChanged += MainV2_AdvancedChanged;
-
-            // first run
-            MainV2_AdvancedChanged(null, null);
         }
 
         protected override void OnInvalidated(InvalidateEventArgs e)
@@ -471,35 +467,6 @@ namespace MissionPlanner.GCSViews
             tabStatus.Width = x;
 
             ThemeManager.ApplyThemeTo(tabStatus);
-        }
-
-        private void MainV2_AdvancedChanged(object sender, EventArgs e)
-        {
-            if (!MainV2.Advanced)
-            {
-                if (!tabControlactions.TabPages.Contains(tabActionsSimple))
-                    tabControlactions.TabPages.Add(tabActionsSimple);
-                //tabControlactions.TabPages.Remove(tabGauges);
-                tabControlactions.TabPages.Remove(tabActions);
-                tabControlactions.TabPages.Remove(tabStatus);
-                tabControlactions.TabPages.Remove(tabServo);
-                tabControlactions.TabPages.Remove(tabScripts);
-
-                tabControlactions.Invalidate();
-            }
-            else
-            {
-                //tabControlactions.TabPages.Remove(tabGauges);
-                tabControlactions.TabPages.Remove(tabActionsSimple);
-                if (!tabControlactions.TabPages.Contains(tabActions))
-                    tabControlactions.TabPages.Add(tabActions);
-                if (!tabControlactions.TabPages.Contains(tabStatus))
-                    tabControlactions.TabPages.Add(tabStatus);
-                if (!tabControlactions.TabPages.Contains(tabServo))
-                    tabControlactions.TabPages.Add(tabServo);
-                if (!tabControlactions.TabPages.Contains(tabScripts))
-                    tabControlactions.TabPages.Add(tabScripts);
-            }
         }
 
         public void Activate()
@@ -871,6 +838,12 @@ namespace MissionPlanner.GCSViews
                 if (!MainV2.comPort.logreadmode)
                     Thread.Sleep(50); // max is only ever 10 hz but we go a little faster to empty the serial queue
 
+                if (this.IsDisposed)
+                {
+                    threadrun = false;
+                    break;
+                }
+
                 try
                 {
                     if (aviwriter != null && vidrec.AddMilliseconds(100) <= DateTime.Now)
@@ -1234,13 +1207,20 @@ namespace MissionPlanner.GCSViews
                             if (MainV2.ShowAirports)
                             {
                                 // airports
-                                foreach (var item in Airports.getAirports(gMapControl1.Position))
+                                foreach (var item in Airports.getAirports(gMapControl1.Position).ToArray())
                                 {
-                                    rallypointoverlay.Markers.Add(new GMapMarkerAirport(item)
+                                    try
                                     {
-                                        ToolTipText = item.Tag,
-                                        ToolTipMode = MarkerTooltipMode.OnMouseOver
-                                    });
+                                        rallypointoverlay.Markers.Add(new GMapMarkerAirport(item)
+                                        {
+                                            ToolTipText = item.Tag,
+                                            ToolTipMode = MarkerTooltipMode.OnMouseOver
+                                        });
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        log.Error(e);
+                                    }
                                 }
                             }
                             waypoints = DateTime.Now;
@@ -1707,7 +1687,10 @@ namespace MissionPlanner.GCSViews
                 {
                     if (lastmapposchange.Second != DateTime.Now.Second)
                     {
-                        gMapControl1.Position = currentloc;
+                        if (Math.Abs(currentloc.Lat - gMapControl1.Position.Lat) > 0.0001 || Math.Abs(currentloc.Lng - gMapControl1.Position.Lng) > 0.0001)
+                        {
+                            gMapControl1.Position = currentloc;
+                        }
                         lastmapposchange = DateTime.Now;
                     }
                     //hud1.Refresh();
@@ -2736,9 +2719,19 @@ namespace MissionPlanner.GCSViews
 
         private void zg1_DoubleClick(object sender, EventArgs e)
         {
-            Form selectform = new Form
+            string formname = "select";
+            Form selectform = Application.OpenForms[formname];
+            if(selectform != null)
             {
-                Name = "select",
+                selectform.WindowState = FormWindowState.Minimized;
+                selectform.Show();
+                selectform.WindowState = FormWindowState.Normal;
+                return;
+            }
+
+            selectform = new Form
+            {
+                Name = formname,
                 Width = 50,
                 Height = 550,
                 Text = "Graph This"
@@ -3097,7 +3090,7 @@ namespace MissionPlanner.GCSViews
                     CustomMessageBox.Show("Max 10 at a time.");
                     ((CheckBox) sender).Checked = false;
                 }
-                ThemeManager.ApplyThemeTo(this);
+                ThemeManager.ApplyThemeTo((Control)sender);
 
                 string selected = "";
                 try
@@ -3411,6 +3404,7 @@ namespace MissionPlanner.GCSViews
                     splitContainer1.Panel2.Controls.Add(but);
                     splitContainer1.Panel2.Controls.Add(sc.Control);
                     ThemeManager.ApplyThemeTo(sc.Control);
+                    ThemeManager.ApplyThemeTo(this);
 
                     sc.Control.Dock = DockStyle.Fill;
                     sc.Control.Visible = true;
@@ -4553,6 +4547,11 @@ namespace MissionPlanner.GCSViews
             }
             catch { CustomMessageBox.Show("The Command failed to execute", "Error"); }
             ((Button)sender).Enabled = true;
+        }
+		
+		private void altitudeAngelSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new Utilities.AltitudeAngel.AASettings().Show(this);
         }
     }
 }

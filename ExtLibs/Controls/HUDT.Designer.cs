@@ -179,11 +179,20 @@ namespace MissionPlanner.Controls {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GPS: 3D rtk.
+        ///   Looks up a localized string similar to GPS: rtk Float.
         /// </summary>
         internal static string GPS5 {
             get {
                 return ResourceManager.GetString("GPS5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GPS: rtk Fixed.
+        /// </summary>
+        internal static string GPS6 {
+            get {
+                return ResourceManager.GetString("GPS6", resourceCulture);
             }
         }
         
