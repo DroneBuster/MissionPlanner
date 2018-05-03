@@ -131,13 +131,21 @@ namespace MissionPlanner.Utilities
             double yawangle = MainV2.comPort.MAV.cs.campointc;
             double rollangle = MainV2.comPort.MAV.cs.campointb;
             double pitchangle = MainV2.comPort.MAV.cs.campointa;
-
+            if(MainV2.comPort.MAVlist.Contains(1, 67))
+            {
+                yawangle = MainV2.comPort.MAVlist[1, 67].cs.yaw;
+            }
+            if(MainV2.comPort.MAV.param.ContainsKey("MNT_NEUTRAL_Z") && MainV2.comPort.MAV.param.ContainsKey("MNT_NEUTRAL_Y"))
+            {
+                yawangle -= MainV2.comPort.MAV.param["MNT_NEUTRAL_Z"].GetValue();
+                pitchangle -= MainV2.comPort.MAV.param["MNT_NEUTRAL_Y"].GetValue();
+            }
             //
             if ((double) MainV2.comPort.MAV.param["MNT_TYPE"] == 4)
             {
-                yawangle = MainV2.comPort.MAVlist[MainV2.comPort.sysidcurrent, 67].cs.yaw;
-                rollangle = MainV2.comPort.MAVlist[MainV2.comPort.sysidcurrent, 67].cs.roll;
-                pitchangle = MainV2.comPort.MAVlist[MainV2.comPort.sysidcurrent, 67].cs.pitch;
+               // yawangle = MainV2.comPort.MAVlist[MainV2.comPort.sysidcurrent, 67].cs.yaw;
+               // rollangle = MainV2.comPort.MAVlist[MainV2.comPort.sysidcurrent, 67].cs.roll;
+               // pitchangle = MainV2.comPort.MAVlist[MainV2.comPort.sysidcurrent, 67].cs.pitch;
             }
 
             if (Math.Abs(rollangle) > 180 || yawangle == 0 && pitchangle == 0)
