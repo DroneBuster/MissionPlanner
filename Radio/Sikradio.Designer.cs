@@ -376,6 +376,8 @@
             // 
             // ENCRYPTION_LEVEL
             // 
+            this.ENCRYPTION_LEVEL.Checked = true;
+            this.ENCRYPTION_LEVEL.CheckState = System.Windows.Forms.CheckState.Checked;
             resources.ApplyResources(this.ENCRYPTION_LEVEL, "ENCRYPTION_LEVEL");
             this.ENCRYPTION_LEVEL.Name = "ENCRYPTION_LEVEL";
             // 
@@ -821,6 +823,8 @@
             // 
             // RENCRYPTION_LEVEL
             // 
+            this.RENCRYPTION_LEVEL.Checked = true;
+            this.RENCRYPTION_LEVEL.CheckState = System.Windows.Forms.CheckState.Checked;
             resources.ApplyResources(this.RENCRYPTION_LEVEL, "RENCRYPTION_LEVEL");
             this.RENCRYPTION_LEVEL.Name = "RENCRYPTION_LEVEL";
             // 
@@ -1166,9 +1170,8 @@
             this.Controls.Add(this.lbl_status);
             this.Controls.Add(this.Progressbar);
             this.Controls.Add(this.BUT_upload);
-            this.MinimumSize = new System.Drawing.Size(781, 433);
-            this.Name = "Sikradio";
             resources.ApplyResources(this, "$this");
+            this.Name = "Sikradio";
             this.SPLIT_local.Panel1.ResumeLayout(false);
             this.SPLIT_local.Panel1.PerformLayout();
             this.SPLIT_local.Panel2.ResumeLayout(false);
