@@ -134,6 +134,7 @@ namespace MissionPlanner.Utilities
             if(MainV2.comPort.MAVlist.Contains(1, 67))
             {
                 yawangle = MainV2.comPort.MAVlist[1, 67].cs.yaw;
+                pitchangle = MainV2.comPort.MAVlist[1, 67].cs.pitch;
             }
             if(MainV2.comPort.MAV.param.ContainsKey("MNT_NEUTRAL_Z") && MainV2.comPort.MAV.param.ContainsKey("MNT_NEUTRAL_Y"))
             {
